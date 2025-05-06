@@ -1,0 +1,26 @@
+project:
+  type: website
+
+website:
+  title: "Kristina Frazier"
+  navbar:
+    left:
+      - text: "Home"
+        file: index.qmd
+      - text: "Portfolio"
+        file: portfolio.qmd
+      - text: "CV"
+        file: cv.qmd
+    right:
+      - about.qmd
+      - icon: github
+        href: https://github.com/KristinaMFrazier
+      - icon: linkedin
+        href: https://linkedin.com//in/kristinamfrazier/
+format:
+  html:
+    theme: minty
+    css: styles.css
+
+editor: visual
+
