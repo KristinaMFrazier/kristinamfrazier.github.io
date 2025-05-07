@@ -2,7 +2,7 @@
 title: "Customer Churn Modeling with R"
 author: "Kristina Frazier & Lauren Manturi"
 date: today
-categories: [analysis, r, classification, machine learning, data visualization, Linear Discriminant Analysis, Random Forest, Logistic Regression]
+categories: [analysis, r, classification, machine learning, data visualization, linear discriminant analysis, random forest, logistic regression]
 ---
 
 ### Introduction

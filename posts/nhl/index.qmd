@@ -2,7 +2,7 @@
 title: "NHL Majority Goal Win Classification"
 author: "Kristina Frazier & Mike McHenry"
 date: today
-categories: [analysis, r, classification, machine learning, Linear Discriminant Analysis, Quadratic Discriminant Analysis, Logistic Regression, K-Nearest Neighbors]
+categories: [analysis, r, classification, machine learning, linear discriminant analysis, quadratic discriminant analysis, logistic regression, k-nearest neighbors]
 ---
 
 ### Introduction
