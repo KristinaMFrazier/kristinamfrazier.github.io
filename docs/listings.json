@@ -3,14 +3,16 @@
     "listing": "/index_old.html",
     "items": [
       "/posts/reseller/index.html",
-      "/posts/telco/index.html"
+      "/posts/telco/index.html",
+      "/posts/nhl/index.html"
     ]
   },
   {
     "listing": "/portfolio.html",
     "items": [
       "/posts/reseller/index.html",
-      "/posts/telco/index.html"
+      "/posts/telco/index.html",
+      "/posts/nhl/index.html"
     ]
   }
 ]

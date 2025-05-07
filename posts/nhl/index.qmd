@@ -1,0 +1,96 @@
+---
+title: "NHL Majority Goal Win Classification"
+author: "Kristina Frazier & Mike McHenry"
+date: "2025-05-05"
+categories: [analysis, r, classification, machine learning, Linear Discriminant Analysis, Quadratic Discriminant Analysis, Logistic Regression, K-Nearest Neighbors]
+---
+
+### Introduction
+
+For this project, I worked with a fellow classmate to build a classification model to National Hockey League game wins.
+
+**Course**: STAT 627 "Statistical Machine Learning"
+
+------------------------------------------------------------------------
+
+### Objective
+
+To classify whether an NHL team would win the majority of goals in a game (even-strength play only), using shot quality and gameplay statistics. The goal was to build a high-performing, interpretable classification model to support data-driven coaching strategies.
+
+![](STAT_627_Project_Frazier_McHenry.pdf){width="100%" height="1000px"}
+
+------------------------------------------------------------------------
+
+### Target Variable
+
+-   `xresult`: A binary variable indicating if a team won the majority of expected goals in a game.
+
+------------------------------------------------------------------------
+
+### Key Predictors
+
+-   `fenwickPercentage`: Possession metric based on unblocked shot attempts
+-   `highDangerxGoalsFor` and `highDangerxGoalsAgainst`: Expected goals from high-quality shots
+-   `xGoalsFromxReboundsOfShotsFor`: Rebounds contributing to expected goals
+-   `shotAttemptsFor`: Total offensive attempts
+-   `home_or_away`: Game location indicator
+
+------------------------------------------------------------------------
+
+### Models Evaluated
+
+1.  Logistic Regression\
+2.  Logistic Regression with Polynomial Terms\
+3.  Linear Discriminant Analysis (LDA)\
+4.  Quadratic Discriminant Analysis (QDA)\
+5.  K-Nearest Neighbors (K = 42)
+
+All models were tested on: - A 50/50 train-test split - 10-fold cross-validation (and LOOCV where applicable)
+
+------------------------------------------------------------------------
+
+### Model Performance
+
+| Model                            | Accuracy |
+|----------------------------------|----------|
+| Logistic Regression (10-fold CV) | 0.898    |
+| Logistic Poly (10-fold CV)       | 0.899    |
+| LDA (Test/Train & LOOCV)         | 0.893    |
+| QDA                              | \~0.886  |
+| KNN (K=42)                       | 0.841    |
+
+Top performer: Logistic regression with polynomial terms and 10-fold cross-validation, with \~90% accuracy.
+
+------------------------------------------------------------------------
+
+### Key Findings
+
+-   Playing at home significantly improves chances of winning goal majority.
+-   Higher Fenwick Percentage (better quality possession) is a strong positive predictor.
+-   More shot attempts (regardless of quality) actually decrease likelihood of winning.
+-   Shot quality (not just quantity)—especially rebounds and high-danger chances—strongly influence classification success.
+
+------------------------------------------------------------------------
+
+### Implications
+
+-   Coaches should emphasize high-quality shot creation and possession control, not just total shot volume.
+-   The logistic model’s interpretability makes it a useful tool for real-time or season-long strategy planning.
+-   Game location and rebound behavior should inform scouting reports and line changes.
+
+------------------------------------------------------------------------
+
+### Limitations
+
+-   Results reflect only even-strength play—special teams (power play, penalty kill) are not included.
+-   The `xresult` target is based on expected goals, not actual score outcomes.
+
+### Complete Analysis
+
+I authored the following R code to arrive at the insights summarized above.
+
+::: {.iframe-container style="margin: 2em 0;"}
+<iframe src="classification_final.html" width="100%" height="600px" style="border: 1px solid #ccc; border-radius: 6px;">
+
+</iframe>
+:::

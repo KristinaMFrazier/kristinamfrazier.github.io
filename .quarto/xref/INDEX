@@ -37,5 +37,8 @@
   },
   "static/welcome/index.qmd": {
     "index.html": "8c43bfc7"
+  },
+  "posts/nhl/index.qmd": {
+    "index.html": "2867a334"
   }
 }
