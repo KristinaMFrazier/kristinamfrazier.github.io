@@ -1,13 +1,15 @@
 ---
 title: "Customer Churn Modeling with R"
 author: "Kristina Frazier & Lauren Manturi"
-date: "2025-05-05"
+date: today
 categories: [analysis, r, classification, machine learning, data visualization, Linear Discriminant Analysis, Random Forest, Logistic Regression]
 ---
 
 ### Introduction
 
-For this project, I worked witrh a fellow classmate to build a classification model to predict customer churn.
+**Course**: ITEC 621 "Predictive Analytics"
+
+For this project, I worked with a fellow classmate to build a classification model to predict customer churn.
 
 ------------------------------------------------------------------------
 
@@ -37,7 +39,7 @@ Other significant variables: `SeniorCitizen`, `MultipleLines`, `PaperlessBilling
 
 ------------------------------------------------------------------------
 
-###️ Methods & Modeling
+### Methods & Modeling
 
 Three classification models were developed using a 60/40 train/test split and a threshold of **0.35** (to balance sensitivity and specificity):
 

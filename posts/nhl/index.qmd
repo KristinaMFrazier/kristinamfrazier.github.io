@@ -1,15 +1,17 @@
 ---
 title: "NHL Majority Goal Win Classification"
 author: "Kristina Frazier & Mike McHenry"
-date: "2025-05-05"
+date: today
 categories: [analysis, r, classification, machine learning, Linear Discriminant Analysis, Quadratic Discriminant Analysis, Logistic Regression, K-Nearest Neighbors]
 ---
 
 ### Introduction
 
-For this project, I worked with a fellow classmate to build a classification model to National Hockey League game wins.
-
 **Course**: STAT 627 "Statistical Machine Learning"
+
+For this project, I worked with a fellow classmate to build a classification model to classify National Hockey League game wins.
+
+
 
 ------------------------------------------------------------------------
 

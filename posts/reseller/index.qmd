@@ -1,24 +1,31 @@
 ---
 title: "Market Value Research Tool"
 author: "Kristina Frazier"
-date: "2025-05-05"
+date: today
 categories: [analysis, r, python, api, regression, machine learning, git, github, data visualization, etl]
 ---
+### Introduction
+
+**Course**: DATA 793 "Data Science Practicum"
 
 This project, which was completed as a graduate-level degree capstone course, tackles a common headache for secondhand fashion resellers: figuring out how to price an item smartly and competitively. The **Market Value Research Tool** is a web app that uses live data from eBay's API, combined with statistical modeling, to provide dynamic price recommendations based on item features, as well market insights about popular brands, pricing trends, and item categories.
 
-<div style="height: 2em;"></div>
+---
 
-::: {.iframe-container}
-<iframe src="https://reseller-market-research-tool.onrender.com/"
-        width="105%" height="400px"
-        style="border: 2px solid #ccc; border-radius: 8px;">
+::: {style="height: 2em;"}
+:::
+
+::: iframe-container
+<iframe src="https://reseller-market-research-tool.onrender.com/" width="105%" height="400px" style="border: 2px solid #ccc; border-radius: 8px;">
+
 </iframe>
 :::
 
+::: {style="height: 2em;"}
+:::
+---
 
-<div style="height: 2em;"></div>
-
+### Technical Development
 
 **Build overview:**
 
@@ -29,9 +36,11 @@ This project, which was completed as a graduate-level degree capstone course, ta
 3.  **App Development**: A Dash-based UI allows for price predictions and exploratory insights, deployed to Render.
 
 The public-facing code is available [on GitHub](https://github.com/KristinaMFrazier/ebay_reseller_capstone), but the live repo is private due to eBay’s API data restrictions.
-<div style="height: 2em;"></div>
+
+::: {style="height: 2em;"}
+:::
 
 ![](ETL.png){style="margin: 2em 0;"}
-<div style="height: 2em;"></div>
 
-
+::: {style="height: 2em;"}
+:::
