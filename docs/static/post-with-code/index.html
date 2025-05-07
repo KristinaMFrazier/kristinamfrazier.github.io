@@ -6,10 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Kristina Frazier &amp; Lauren Manturi">
+<meta name="author" content="Harlow Malloc">
 <meta name="dcterms.date" content="2025-05-05">
 
-<title>Customer Churn Modeling with R – Kristina Frazier</title>
+<title>Post With Code – Kristina Frazier</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -21,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -76,7 +110,7 @@ ul.task-list li input[type="checkbox"] {
 <body class="nav-fixed fullcontent">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+  <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
@@ -126,121 +160,58 @@ ul.task-list li input[type="checkbox"] {
     </nav>
 </header>
 <!-- content -->
-<header id="title-block-header" class="quarto-title-block default page-columns page-full">
-  <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-body">
-      <h1 class="title">Customer Churn Modeling with R</h1>
-                                <div class="quarto-categories">
-                <div class="quarto-category">analysis</div>
-                <div class="quarto-category">r</div>
-                <div class="quarto-category">classification</div>
-                <div class="quarto-category">machine learning</div>
-                <div class="quarto-category">data visualization</div>
-                <div class="quarto-category">Linear Discriminant Analysis</div>
-                <div class="quarto-category">Random Forest</div>
-                <div class="quarto-category">Logistic Regression</div>
-              </div>
-                  </div>
-  </div>
-    
-  
-  <div class="quarto-title-meta">
-
-      <div>
-      <div class="quarto-title-meta-heading">Author</div>
-      <div class="quarto-title-meta-contents">
-               <p>Kristina Frazier &amp; Lauren Manturi </p>
-            </div>
-    </div>
-      
-      <div>
-      <div class="quarto-title-meta-heading">Published</div>
-      <div class="quarto-title-meta-contents">
-        <p class="date">May 5, 2025</p>
-      </div>
-    </div>
-    
-      
-    </div>
-    
-  
-  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
     
 <!-- main -->
-<main class="content quarto-banner-title-block" id="quarto-document-content">
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Post With Code</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">code</div>
+    <div class="quarto-category">analysis</div>
+    <div class="quarto-category">r</div>
+  </div>
+  </div>
 
 
 
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Harlow Malloc </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">May 5, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
 
 
-<section id="introduction" class="level3">
-<h3 class="anchored" data-anchor-id="introduction">Introduction</h3>
-<p>For this project, I worked witrh a fellow classmate to build a classification model to predict customer churn.</p>
-<hr>
-</section>
-<section id="business-problem" class="level3">
-<h3 class="anchored" data-anchor-id="business-problem">Business Problem</h3>
-<p>Customer churn threatens revenue and growth in industries like telecommunications. The goal of this project was to build a predictive model to classify customers as high or low churn risk—allowing Telco to proactively address churn and improve customer retention.</p>
-<hr>
-</section>
-<section id="key-predictors-analyzed" class="level3">
-<h3 class="anchored" data-anchor-id="key-predictors-analyzed">Key Predictors Analyzed</h3>
-<ul>
-<li><strong>Tenure</strong>: Longer tenure = lower churn</li>
-<li><strong>Monthly Charges</strong>: Higher charges = higher churn</li>
-<li><strong>Contract Type</strong>: Month-to-month contracts are more likely to churn</li>
-<li><strong>Internet Service Type</strong>: Quality and availability impact churn risk</li>
-</ul>
-<p>Other significant variables: <code>SeniorCitizen</code>, <code>MultipleLines</code>, <code>PaperlessBilling</code>, <code>PaymentMethod</code>, <code>TotalCharges</code></p>
-<hr>
-</section>
-<section id="data-insights" class="level3">
-<h3 class="anchored" data-anchor-id="data-insights">Data Insights</h3>
-<ul>
-<li>Average customer tenure: <strong>32 months</strong></li>
-<li>Churn negatively correlated with <strong>tenure</strong> and <strong>contract length</strong></li>
-<li>Customers with long-term contracts are more likely to stay</li>
-<li>Customers with higher monthly charges are more likely to churn</li>
-</ul>
-<hr>
-<p>###️ Methods &amp; Modeling</p>
-<p>Three classification models were developed using a 60/40 train/test split and a threshold of <strong>0.35</strong> (to balance sensitivity and specificity):</p>
-<ol type="1">
-<li><strong>Logistic Regression</strong></li>
-<li><strong>Linear Discriminant Analysis</strong></li>
-<li><strong>Random Forest</strong> (bagging approach, <code>mtry = 8</code>)</li>
-</ol>
-<hr>
-</section>
-<section id="model-performance" class="level3">
-<h3 class="anchored" data-anchor-id="model-performance">Model Performance</h3>
-<ul>
-<li>All models achieved ~<strong>77% accuracy</strong></li>
-<li><strong>Higher specificity</strong> than sensitivity due to class imbalance</li>
-<li>Logistic regression chosen for its <strong>interpretability</strong> and business value</li>
-</ul>
-<blockquote class="blockquote">
-<p>Recommended strategy: <strong>Lower the threshold</strong> to increase <strong>sensitivity</strong>, even at the cost of more false positives—because missing churners is riskier than flagging false ones.</p>
-</blockquote>
-<hr>
-</section>
-<section id="final-recommendation" class="level3">
-<h3 class="anchored" data-anchor-id="final-recommendation">Final Recommendation</h3>
-<p>Use the <strong>logistic regression model</strong> to guide customer retention efforts. It provides interpretable coefficients for business decisions and aligns best with Telco’s goal of predicting and preventing customer churn.</p>
-<hr>
-</section>
-<section id="complete-analysis" class="level3">
-<h3 class="anchored" data-anchor-id="complete-analysis">Complete Analysis</h3>
-<p>I authored the following R code to arrive at the insights summarized above.</p>
-<div class="iframe-container" style="margin: 2em 0;">
-<iframe src="customerchurn_prelim_da.html" width="100%" height="600px" style="border: 1px solid #ccc; border-radius: 6px;">
-</iframe>
+</header>
+
+
+<p>This is a post with executable code.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2</code></pre>
+</div>
 </div>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

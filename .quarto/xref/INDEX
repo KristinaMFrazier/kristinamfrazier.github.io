@@ -28,5 +28,14 @@
   },
   "posts/telco/customerchurn_prelim_da.Rmd": {
     "customerchurn_prelim_da.html": "721f9828"
+  },
+  "static/post-with-code/index.qmd": {
+    "index.html": "085f846c"
+  },
+  "static/customerchurn_prelim_da.Rmd": {
+    "customerchurn_prelim_da.html": "e8663ebe"
+  },
+  "static/welcome/index.qmd": {
+    "index.html": "8c43bfc7"
   }
 }
