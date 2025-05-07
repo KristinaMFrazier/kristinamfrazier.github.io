@@ -1,9 +1,9 @@
 {
-    "path": "~/Documents/r/my_website",
+    "path": "~/Documents/r/my_website/_site",
     "sortOrder": [
         {
             "columnIndex": 2,
-            "ascending": true
+            "ascending": false
         }
     ]
 }

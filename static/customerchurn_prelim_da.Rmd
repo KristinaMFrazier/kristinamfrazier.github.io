@@ -1,0 +1,585 @@
+---
+title: "TELCO Customer Churn"
+author: "Kristina Frazier & Lauren Manturi"
+date: "December 4, 2024"
+output:
+  html_document:
+    self_contained: false
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    df_print: paged
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(echo=T, include=T, warning=F, message=F)
+```
+
+# Descriptive Analysis
+
+This section is an initial data analysis of all variables as an early assessment of fit for predictive modeling.
+
+## Summary Statistics
+
+```{r Libraries}
+library(tidyverse)
+library(car)
+library(klaR)
+library(lmtest)
+library(car)
+library(ROCR)
+library(MASS)
+library(tree)
+library(randomForest)
+```
+
+```{r Dataset}
+churn <- read_csv('WA_Fn-UseC_-Telco-Customer-Churn.csv')
+# look at NA values - might be able to compute regression model to impute those values
+glimpse(churn)
+# Removes 21 observations
+churn <- na.omit(churn)
+glimpse(churn)
+summary(churn)
+```
+
+## Outcome Variable
+
+```{r outcome variable}
+table(churn$Churn)
+```
+
+There are many more observations for customers who did not churn, which may make any model biased towards predicting no churn.
+
+## Character Variables
+
+```{r character variables}
+# Select character variables
+names(churn)[map_lgl(churn, is.character)]
+```
+
+```{r char var vector}
+# create a vector of character variables
+char_vars <- c("gender","Partner","Dependents","PhoneService","MultipleLines","InternetService","OnlineSecurity","OnlineBackup","DeviceProtection","TechSupport","StreamingTV","StreamingMovies","Contract","PaperlessBilling","PaymentMethod")
+```
+
+### Category Counts
+
+This section checks to see if there are any categories with very few observations for each of the categorical variables.
+
+```{r category counts}
+for (var in char_vars) {
+  print(var)
+  print(table(churn[[var]]))
+}
+```
+
+While there are some variables that have an imbalance of counts for each category, for the most part, every categorical variable has enough observations with in each category.
+
+### Chi Square Test Bar Plots
+
+```{r Gender}
+table(churn$gender,churn$Churn)
+chisq.test(table(churn$gender,churn$Churn)) 
+
+ggplot(churn, aes(x = factor(gender), fill = factor(Churn))) +
+    geom_bar(position = "fill") +
+    labs(title = "Churn Rate by Gender", x = "Gender", y = "Proportion")
+```
+
+```{r SeniorCitizen}
+table(churn$SeniorCitizen,churn$Churn)
+chisq.test(table(churn$SeniorCitizen,churn$Churn)) 
+
+ggplot(churn, aes(x = factor(SeniorCitizen), fill = factor(Churn))) +
+    geom_bar(position = "fill") +
+    labs(title = "Churn Rate by SeniorCitizen Status", x = "SeniorCitizen", y = "Proportion")
+```
+
+```{r Partner}
+table(churn$Partner,churn$Churn)
+chisq.test(table(churn$Partner,churn$Churn))
+
+ggplot(churn, aes(x = factor(Partner), fill = factor(Churn))) +
+    geom_bar(position = "fill") +
+    labs(title = "Churn Rate by Partner Status", x = "Partner", y = "Proportion")
+```
+
+```{r Dependents}
+table(churn$Dependents,churn$Churn)
+chisq.test(table(churn$Dependents,churn$Churn)) 
+
+ggplot(churn, aes(x = factor(Dependents), fill = factor(Churn))) +
+    geom_bar(position = "fill") +
+    labs(title = "Churn Rate by Dependents", x = "Dependents", y = "Proportion")
+```
+
+```{r PhoneService}
+table(churn$PhoneService,churn$Churn)
+chisq.test(table(churn$PhoneService,churn$Churn))
+
+ggplot(churn, aes(x = factor(PhoneService), fill = factor(Churn))) +
+    geom_bar(position = "fill") +
+    labs(title = "Churn Rate by PhoneService", x = "PhoneService", y = "Proportion")
+```
+
+```{r MultipleLines}
+table(churn$MultipleLines,churn$Churn)
+chisq.test(table(churn$MultipleLines,churn$Churn)) 
+
+ggplot(churn, aes(x = factor(MultipleLines), fill = factor(Churn))) +
+    geom_bar(position = "fill") +
+    labs(title = "Churn Rate by MultipleLines", x = "MultipleLines", y = "Proportion")
+```
+
+```{r InternetService}
+table(churn$InternetService,churn$Churn)
+chisq.test(table(churn$InternetService,churn$Churn)) 
+
+ggplot(churn, aes(x = factor(InternetService), fill = factor(Churn))) +
+    geom_bar(position = "fill") +
+    labs(title = "Churn Rate by InternetService", x = "InternetService", y = "Proportion") 
+```
+
+```{r OnlineSecurity}
+table(churn$OnlineSecurity,churn$Churn)
+chisq.test(table(churn$OnlineSecurity,churn$Churn)) 
+
+ggplot(churn, aes(x = factor(OnlineSecurity), fill = factor(Churn))) +
+    geom_bar(position = "fill") +
+    labs(title = "Churn Rate by OnlineSecurity", x = "OnlineSecurity", y = "Proportion")  
+```
+
+```{r OnlineBackup}
+table(churn$OnlineBackup,churn$Churn)
+chisq.test(table(churn$OnlineBackup,churn$Churn))
+ 
+ggplot(churn, aes(x = factor(OnlineBackup), fill = factor(Churn))) +
+    geom_bar(position = "fill") +
+    labs(title = "Churn Rate by OnlineBackup", x = "OnlineBackup", y = "Proportion")
+```
+
+```{r DeviceProtection}
+table(churn$DeviceProtection,churn$Churn)
+chisq.test(table(churn$DeviceProtection,churn$Churn))
+ 
+ggplot(churn, aes(x = factor(DeviceProtection), fill = factor(Churn))) +
+    geom_bar(position = "fill") +
+    labs(title = "Churn Rate by DeviceProtection", x = "DeviceProtection", y = "Proportion") 
+```
+
+```{r TechSupport}
+table(churn$TechSupport,churn$Churn)
+chisq.test(table(churn$TechSupport,churn$Churn))
+ 
+ggplot(churn, aes(x = factor(TechSupport), fill = factor(Churn))) +
+    geom_bar(position = "fill") +
+    labs(title = "Churn Rate by TechSupport", x = "TechSupport", y = "Proportion")  
+```
+
+```{r StreamingTV}
+table(churn$StreamingTV,churn$Churn)
+chisq.test(table(churn$StreamingTV,churn$Churn))
+ 
+ggplot(churn, aes(x = factor(StreamingTV), fill = factor(Churn))) +
+    geom_bar(position = "fill") +
+    labs(title = "Churn Rate by StreamingTV", x = "StreamingTV", y = "Proportion") 
+```
+
+```{r StreamingMovies}
+table(churn$StreamingMovies,churn$Churn)
+chisq.test(table(churn$StreamingMovies,churn$Churn))
+ 
+ggplot(churn, aes(x = factor(StreamingMovies), fill = factor(Churn))) +
+    geom_bar(position = "fill") +
+    labs(title = "Churn Rate by StreamingMovies", x = "StreamingMovies", y = "Proportion")  
+```
+
+```{r Contract}
+table(churn$Contract,churn$Churn)
+chisq.test(table(churn$Contract,churn$Churn))
+ 
+ggplot(churn, aes(x = factor(Contract), fill = factor(Churn))) +
+    geom_bar(position = "fill") +
+    labs(title = "Churn Rate by Contract", x = "Contract", y = "Proportion") 
+```
+
+```{r PaperlessBilling}
+table(churn$PaperlessBilling,churn$Churn)
+chisq.test(table(churn$PaperlessBilling,churn$Churn))
+ 
+ggplot(churn, aes(x = factor(PaperlessBilling), fill = factor(Churn))) +
+    geom_bar(position = "fill") +
+    labs(title = "Churn Rate by PaperlessBilling", x = "PaperlessBilling", y = "Proportion") 
+```
+
+```{r PaymentMethod}
+table(churn$PaymentMethod,churn$Churn)
+chisq.test(table(churn$PaymentMethod,churn$Churn))
+ 
+ggplot(churn, aes(x = factor(PaymentMethod), fill = factor(Churn))) +
+    geom_bar(position = "fill") +
+    labs(title = "Churn Rate by PaymentMethod", x = "PaymentMethod", y = "Proportion") 
+```
+
+## Numeric Variables
+
+### BoxPlots
+
+```{r MonthlyCharges}
+boxplot(MonthlyCharges~Churn, data = churn)
+```
+
+```{r tenure}
+boxplot(tenure~Churn, data = churn)
+```
+
+```{r TotalCharges}
+boxplot(TotalCharges~Churn, data = churn)
+```
+
+### Distributions
+
+MonthlyCharges, tenure, and TotalCharges
+
+```{r numeric distributions}
+par(mfrow=c(2,3))
+
+hist(churn$MonthlyCharges)
+hist(churn$tenure)
+hist(churn$TotalCharges)
+
+hist(log(churn$MonthlyCharges))
+hist(log(churn$tenure))
+hist(log(churn$TotalCharges))
+```
+
+The numeric predictors are not normally distributed which may lead to the model having greater predictor power given certain values of predictors rather than others.
+
+# Model Assumptions
+
+## Significant predictors
+
+Section A.1.3.2 shows the outcome of chi-square tests to assess the relationship between each variable and the outcome variable, Churn. These tests determined that the following variables are significantly related to Churn: SeniorCitizen, Partner, Dependents, MultipleLines, InternetService, OnlineSecurity, OnlineBackup, DeviceProtection, TechSupport, StreamingTV, StreamingMovies, Contract, PaperlessBilling and PaymentMethod. And all numeric variables, Tenure, MonthlyCharges, and TotalCharges have significantly different means for Churn status.
+
+```{r churn.fit}
+# Fit an initial model to further determine variable significance.
+churn$Churn <- ifelse(churn$Churn == 'Yes',1,0)
+churn.fit <- glm(Churn~.-customerID,family=binomial(link="logit"),data = churn)
+summary(churn.fit)
+
+require(coefplot)
+coefplot(churn.fit)
+```
+
+This model indicates that considering all variables available, the following variables are significantly related to Churn.
+
+```{r churn.fit.reduced}
+churn.fit.reduced <- glm(Churn~SeniorCitizen+tenure+MultipleLines+InternetService+Contract+PaperlessBilling+PaymentMethod+TotalCharges,family=binomial(link="logit"),data = churn)
+summary(churn.fit.reduced)
+```
+
+But we will use variable selection to determine the ultimate best model.
+
+## Multicollinearity
+
+```{r cond.index}
+# Xs are independent (uncorrelated)
+cond.index(churn.fit, data=churn)
+cond.index(churn.fit.reduced, data=churn)
+
+```
+
+The CI for the full model is very high at 102,100,200. The reduced model with only variables signficant the 95 percent level has a much lower CI.
+
+```{r vif}
+vif(churn.fit.reduced)
+```
+
+None of the variance inflation factors for the variables in the reduced model exceeds the threshold of 10.
+
+## Outliers & Variable Distributions
+
+Severe outliers do not appear to be a problem for any of the variables, but all variables do have either a non-normal, skewed, or slightly unbalanced distributions. Therefore, this dataset is likely to produce models with high variation.
+
+```{r outlier plots}
+plot(churn.fit.reduced, which = 3)
+plot(churn.fit.reduced, which = 4)
+```
+
+```{r outlier information}
+churn[c(269,4266,4812),c("SeniorCitizen","tenure","MultipleLines","InternetService","Contract","PaperlessBilling","PaymentMethod","TotalCharges")]
+```
+
+```{r variable stats}
+summary(churn[,c("SeniorCitizen","tenure","MultipleLines","InternetService","Contract","PaperlessBilling","PaymentMethod","TotalCharges")])
+```
+
+These three customers, c(269,4266,4812), are identified as potential influential observations. This may be because they have longer than average tenure as customers, all close to the 75th percentile of tenure length among the entire dataset.
+
+## Linearity
+
+Relationship between log-odds of Churn and numeric predictors. [Linearity of numeric predictors for logit models] (<https://stats.stackexchange.com/questions/169348/how-should-i-check-the-assumption-of-linearity-to-the-logit-for-the-continuous-i>)
+
+```{r selected numeric variables}
+summary(churn[,c('tenure','TotalCharges')])
+```
+
+```{r churn.fit.num}
+par(mfrow=c(1,2))
+churn.fit.num <- glm(Churn~tenure+TotalCharges,family=binomial(link="logit"), data = churn)
+
+log.odds <- predict(churn.fit.num, type = "link")
+
+plot(churn$tenure,log.odds)
+plot(churn$TotalCharges,log.odds)
+```
+
+```{r}
+
+odds <- exp(log.odds)
+
+probabilities <- odds/(1+odds)
+```
+
+# Variable Selection
+
+```{r churn.stepwise, cache = TRUE}
+churn.null <- glm(Churn~1,family=binomial(link="logit"),data = churn)
+
+# Because there are so many variables, we can afford to be restrictive on variable selection
+k <- qchisq(0.01, 1, lower.tail=F)
+
+churn.stepwise <- step(churn.fit,
+                       scope=list(lower = churn.null,upper = churn.fit),
+                       direction="both",test="F",
+                       k = k)
+
+summary(churn.stepwise)
+```
+
+Variables selected:
+
+```{r}
+churn.stepwise$call
+```
+
+```{r}
+churn.fit.reduced$call
+```
+
+```{r}
+# Remove streaming movies
+churn.stepwise.1 <- glm(formula = Churn ~ SeniorCitizen + tenure + MultipleLines + 
+    InternetService + OnlineSecurity + TechSupport + 
+    Contract + PaperlessBilling + PaymentMethod + TotalCharges, 
+    family = binomial(link = "logit"), data = churn)
+
+# Remove streaming movies, TechSupport
+churn.stepwise.2 <- glm(formula = Churn ~ SeniorCitizen + tenure + MultipleLines + 
+    InternetService + OnlineSecurity + 
+    Contract + PaperlessBilling + PaymentMethod + TotalCharges, 
+    family = binomial(link = "logit"), data = churn)
+
+anova(churn.fit.reduced,churn.stepwise.2,churn.stepwise.1,churn.stepwise)
+```
+
+Model 2 is significantly better at explaining Churn. This stepwise model adds back in three variables to to the reduced model: OnlineSecurity, TechSupport, StreamingMovies.
+
+## Re-check Multicollinearity
+
+```{r}
+cond.index(churn.stepwise, data=churn)
+cond.index(churn.stepwise.1, data=churn)
+cond.index(churn.stepwise.2, data=churn)
+cond.index(churn.fit.reduced, data=churn)
+```
+
+# Model Selection
+
+## Logistic Regression
+
+```{r churn.logreg}
+churn.logreg <- glm(Churn~SeniorCitizen+tenure+MultipleLines+InternetService+Contract+PaperlessBilling+PaymentMethod+TotalCharges,
+    family=binomial(link="logit"),
+    data = churn)
+
+summary(churn.logreg)
+broom::tidy(churn.logreg)
+```
+
+The polynomial model is significantly better.
+
+```{r}
+log.odds <- coef(churn.logreg)    
+odds <- exp(coef(churn.logreg))
+prob <- odds/(1+odds)
+cbind(log.odds, odds, prob)
+```
+
+### Test/Train Split
+
+```{r tts}
+set.seed(1)
+n <- nrow(churn)
+train <- sample(n,n*0.60)
+
+```
+
+### Linear Variables
+
+```{r churn.logreg.linear.train}
+churn.logreg.linear.train <- glm(Churn ~ SeniorCitizen + tenure + MultipleLines + InternetService + Contract + PaperlessBilling + PaymentMethod + TotalCharges,
+    family=binomial(link="logit"),
+    data = churn[train,])
+
+probs <- predict(churn.logreg.linear.train, churn[-train,], type = "response")
+# Lowered the threshold manually to 0.35 just by trial and error
+preds <- ifelse(probs>0.35, 1, 0)
+conf.mat <- table(preds, churn$Churn[-train])
+
+TruN=conf.mat[1,1] # True negatives, row 1 col 1
+TruP=conf.mat[2,2] # True positives, row 2 col 2
+FalP=conf.mat[2,1] # False positives, etc.
+FalN=conf.mat[1,2] # False negatives
+TotN=conf.mat[1,1] + conf.mat[2,1] # Total negatives
+TotP=conf.mat[1,2] + conf.mat[2,2] # Total positives
+Tot=TotN+TotP # Matrix total
+
+Accuracy=(TruN+TruP)/Tot
+Error=(FalN+FalP)/Tot
+Sensitivity=TruP/TotP # Proportion of correct positives
+Specificity=TruN/TotN # Proportion of correct negatives
+FalPos = 1 - Specificity
+
+print(c("Accuracy"=Accuracy,
+        "Error"=Error,
+        "Sensitivity"=Sensitivity,
+        "Specificity"=Specificity,
+        "False Positives"=FalPos), digits=2) # Prints fewer digits
+
+logreg.linear.rates <- c("Accuracy"=Accuracy,
+        "Error"=Error,
+        "Sensitivity"=Sensitivity,
+        "Specificity"=Specificity,
+        "False Positives"=FalPos)
+
+pred <- prediction(preds,churn$Churn[-train])
+perf <- performance(pred,"tpr","fpr")
+plot(perf,colorize=T)
+
+auc <- performance(pred,"auc")
+c(auc@y.name[[1]], auc@y.values[[1]])
+```
+
+## Linear Discriminant Analysis
+
+```{r}
+churn.lda <- lda(Churn ~ SeniorCitizen + tenure + MultipleLines + InternetService + Contract + PaperlessBilling + PaymentMethod + TotalCharges,
+    data = churn[train,])
+
+
+preds <- predict(churn.lda,churn[-train,])$posterior[,2]
+preds <- ifelse(preds > 0.35, 1, 0)
+
+conf.mat <- table(preds, churn$Churn[-train])
+
+TruN=conf.mat[1,1] # True negatives, row 1 col 1
+TruP=conf.mat[2,2] # True positives, row 2 col 2
+FalP=conf.mat[2,1] # False positives, etc.
+FalN=conf.mat[1,2] # False negatives
+TotN=conf.mat[1,1] + conf.mat[2,1] # Total negatives
+TotP=conf.mat[1,2] + conf.mat[2,2] # Total positives
+Tot=TotN+TotP # Matrix total
+
+Accuracy=(TruN+TruP)/Tot
+Error=(FalN+FalP)/Tot
+Sensitivity=TruP/TotP # Proportion of correct positives
+Specificity=TruN/TotN # Proportion of correct negatives
+FalPos = 1 - Specificity
+
+print(c("Accuracy"=Accuracy,
+        "Error"=Error,
+        "Sensitivity"=Sensitivity,
+        "Specificity"=Specificity,
+        "False Positives"=FalPos), digits=2) # Prints fewer digits
+
+lda.rates <- c("Accuracy"=Accuracy,
+        "Error"=Error,
+        "Sensitivity"=Sensitivity,
+        "Specificity"=Specificity,
+        "False Positives"=FalPos)
+
+
+pred <- prediction(preds,churn$Churn[-train])
+perf <- performance(pred,"tpr","fpr")
+plot(perf,colorize=T)
+
+auc <- performance(pred,"auc")
+c(auc@y.name[[1]], auc@y.values[[1]])
+```
+
+## Random Forest
+
+```{r}
+set.seed(123)
+churn.rf <- randomForest(as.factor(Churn) ~ SeniorCitizen + tenure + MultipleLines + InternetService + Contract + PaperlessBilling + PaymentMethod + TotalCharges,
+    data = churn[train,],
+    importance=T,
+    mtry=8)
+
+plot(churn.rf)
+varImpPlot(churn.rf) 
+importance(churn.rf)
+
+```
+
+```{r}
+# Learned how to produce probabilites from trees here: https://stackoverflow.com/questions/64651101/is-there-a-way-to-change-threshold-of-a-classification-within-a-model-in-caret-r
+preds <- predict(churn.rf,churn[-train,], type = "prob")[,2]
+preds <- ifelse(probs>0.35, 1, 0)
+conf.mat <- table(preds, churn$Churn[-train])
+
+TruN=conf.mat[1,1] # True negatives, row 1 col 1
+TruP=conf.mat[2,2] # True positives, row 2 col 2
+FalP=conf.mat[2,1] # False positives, etc.
+FalN=conf.mat[1,2] # False negatives
+TotN=conf.mat[1,1] + conf.mat[2,1] # Total negatives
+TotP=conf.mat[1,2] + conf.mat[2,2] # Total positives
+Tot=TotN+TotP # Matrix total
+
+Accuracy=(TruN+TruP)/Tot
+Error=(FalN+FalP)/Tot
+Sensitivity=TruP/TotP # Proportion of correct positives
+Specificity=TruN/TotN # Proportion of correct negatives
+FalPos = 1 - Specificity
+
+print(c("Accuracy"=Accuracy,
+        "Error"=Error,
+        "Sensitivity"=Sensitivity,
+        "Specificity"=Specificity,
+        "False Positives"=FalPos), digits=2) # Prints fewer digits
+
+rf.rates <- c("Accuracy"=Accuracy,
+        "Error"=Error,
+        "Sensitivity"=Sensitivity,
+        "Specificity"=Specificity,
+        "False Positives"=FalPos)
+
+
+# convert preds to numeric
+preds <- ifelse(as.character(preds) == '0',0,1)
+
+pred <- prediction(preds,churn$Churn[-train])
+perf <- performance(pred,"tpr","fpr")
+plot(perf,colorize=T)
+
+auc <- performance(pred,"auc")
+c(auc@y.name[[1]], auc@y.values[[1]])
+```
+
+# Models Performance Summary
+
+```{r}
+round(rbind(logreg.linear.rates,lda.rates,rf.rates),5)
+```

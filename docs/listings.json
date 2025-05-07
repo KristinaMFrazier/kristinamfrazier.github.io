@@ -2,15 +2,15 @@
   {
     "listing": "/index_old.html",
     "items": [
-      "/posts/post-with-code/index.html",
-      "/posts/welcome/index.html"
+      "/posts/reseller/index.html",
+      "/posts/telco/index.html"
     ]
   },
   {
     "listing": "/portfolio.html",
     "items": [
-      "/posts/post-with-code/index.html",
-      "/posts/welcome/index.html"
+      "/posts/reseller/index.html",
+      "/posts/telco/index.html"
     ]
   }
 ]

@@ -1,0 +1,72 @@
+---
+title: "Customer Churn Modeling with R"
+author: "Kristina Frazier & Lauren Manturi"
+date: "2025-05-05"
+categories: [analysis, r, classification, machine learning, data visualization, Linear Discriminant Analysis, Random Forest, Logistic Regression]
+---
+
+### Introduction
+
+For this project, I worked witrh a fellow classmate to build a classification model to predict customer churn.
+
+---
+
+### Business Problem
+
+Customer churn threatens revenue and growth in industries like telecommunications. The goal of this project was to build a predictive model to classify customers as high or low churn risk—allowing Telco to proactively address churn and improve customer retention.
+
+---
+
+### Key Predictors Analyzed
+
+- **Tenure**: Longer tenure = lower churn
+- **Monthly Charges**: Higher charges = higher churn
+- **Contract Type**: Month-to-month contracts are more likely to churn
+- **Internet Service Type**: Quality and availability impact churn risk
+
+Other significant variables: `SeniorCitizen`, `MultipleLines`, `PaperlessBilling`, `PaymentMethod`, `TotalCharges`
+
+---
+
+### Data Insights
+
+- Average customer tenure: **32 months**
+- Churn negatively correlated with **tenure** and **contract length**
+- Customers with long-term contracts are more likely to stay
+- Customers with higher monthly charges are more likely to churn
+
+---
+
+###️ Methods & Modeling
+
+Three classification models were developed using a 60/40 train/test split and a threshold of **0.35** (to balance sensitivity and specificity):
+
+1. **Logistic Regression**
+2. **Linear Discriminant Analysis**
+3. **Random Forest** (bagging approach, `mtry = 8`)
+
+---
+
+### Model Performance
+
+- All models achieved ~**77% accuracy**
+- **Higher specificity** than sensitivity due to class imbalance
+- Logistic regression chosen for its **interpretability** and business value
+
+> Recommended strategy: **Lower the threshold** to increase **sensitivity**, even at the cost of more false positives—because missing churners is riskier than flagging false ones.
+
+---
+
+### Final Recommendation
+
+Use the **logistic regression model** to guide customer retention efforts. It provides interpretable coefficients for business decisions and aligns best with Telco’s goal of predicting and preventing customer churn.
+
+---
+
+### Complete Analysis
+
+I authored the following R code to arrive at the insights summarized above.
+
+::: {.iframe-container style="margin: 2em 0;"}
+<iframe src="../static/customerchurn_prelim_da.html" width="100%" height="600px" style="border: 1px solid #ccc; border-radius: 6px;"></iframe>
+:::

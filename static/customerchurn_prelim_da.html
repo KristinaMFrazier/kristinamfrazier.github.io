@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Kristina Frazier &amp; Lauren Manturi" />
+
+<meta name="date" content="2024-12-04" />
+
+<title>TELCO Customer Churn</title>
+
+<script src="customerchurn_prelim_da_files/header-attrs-2.28/header-attrs.js"></script>
+<script src="customerchurn_prelim_da_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="customerchurn_prelim_da_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="customerchurn_prelim_da_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="customerchurn_prelim_da_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="customerchurn_prelim_da_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="customerchurn_prelim_da_files/navigation-1.1/tabsets.js"></script>
+<link href="customerchurn_prelim_da_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="customerchurn_prelim_da_files/highlightjs-9.12.0/highlight.js"></script>
+<link href="customerchurn_prelim_da_files/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="customerchurn_prelim_da_files/pagedtable-1.1/js/pagedtable.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">TELCO Customer Churn</h1>
+<h4 class="author">Kristina Frazier &amp; Lauren Manturi</h4>
+<h4 class="date">December 4, 2024</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#descriptive-analysis" id="toc-descriptive-analysis"><span
+class="toc-section-number">1</span> Descriptive Analysis</a>
+<ul>
+<li><a href="#summary-statistics" id="toc-summary-statistics"><span
+class="toc-section-number">1.1</span> Summary Statistics</a></li>
+<li><a href="#outcome-variable" id="toc-outcome-variable"><span
+class="toc-section-number">1.2</span> Outcome Variable</a></li>
+<li><a href="#character-variables" id="toc-character-variables"><span
+class="toc-section-number">1.3</span> Character Variables</a></li>
+<li><a href="#numeric-variables" id="toc-numeric-variables"><span
+class="toc-section-number">1.4</span> Numeric Variables</a></li>
+</ul></li>
+<li><a href="#model-assumptions" id="toc-model-assumptions"><span
+class="toc-section-number">2</span> Model Assumptions</a>
+<ul>
+<li><a href="#significant-predictors"
+id="toc-significant-predictors"><span
+class="toc-section-number">2.1</span> Significant predictors</a></li>
+<li><a href="#multicollinearity" id="toc-multicollinearity"><span
+class="toc-section-number">2.2</span> Multicollinearity</a></li>
+<li><a href="#outliers-variable-distributions"
+id="toc-outliers-variable-distributions"><span
+class="toc-section-number">2.3</span> Outliers &amp; Variable
+Distributions</a></li>
+<li><a href="#linearity" id="toc-linearity"><span
+class="toc-section-number">2.4</span> Linearity</a></li>
+</ul></li>
+<li><a href="#variable-selection" id="toc-variable-selection"><span
+class="toc-section-number">3</span> Variable Selection</a>
+<ul>
+<li><a href="#re-check-multicollinearity"
+id="toc-re-check-multicollinearity"><span
+class="toc-section-number">3.1</span> Re-check
+Multicollinearity</a></li>
+</ul></li>
+<li><a href="#model-selection" id="toc-model-selection"><span
+class="toc-section-number">4</span> Model Selection</a>
+<ul>
+<li><a href="#logistic-regression" id="toc-logistic-regression"><span
+class="toc-section-number">4.1</span> Logistic Regression</a></li>
+<li><a href="#linear-discriminant-analysis"
+id="toc-linear-discriminant-analysis"><span
+class="toc-section-number">4.2</span> Linear Discriminant
+Analysis</a></li>
+<li><a href="#random-forest" id="toc-random-forest"><span
+class="toc-section-number">4.3</span> Random Forest</a></li>
+</ul></li>
+<li><a href="#models-performance-summary"
+id="toc-models-performance-summary"><span
+class="toc-section-number">5</span> Models Performance Summary</a></li>
+</ul>
+</div>
+
+<div id="descriptive-analysis" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Descriptive
+Analysis</h1>
+<p>This section is an initial data analysis of all variables as an early
+assessment of fit for predictive modeling.</p>
+<div id="summary-statistics" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> Summary
+Statistics</h2>
+<pre class="r"><code>library(tidyverse)
+library(car)
+library(klaR)
+library(lmtest)
+library(car)
+library(ROCR)
+library(MASS)
+library(tree)
+library(randomForest)</code></pre>
+<pre class="r"><code>churn &lt;- read_csv(&#39;WA_Fn-UseC_-Telco-Customer-Churn.csv&#39;)
+# look at NA values - might be able to compute regression model to impute those values
+glimpse(churn)</code></pre>
+<pre><code>## Rows: 7,043
+## Columns: 21
+## $ customerID       &lt;chr&gt; &quot;7590-VHVEG&quot;, &quot;5575-GNVDE&quot;, &quot;3668-QPYBK&quot;, &quot;7795-CFOCW…
+## $ gender           &lt;chr&gt; &quot;Female&quot;, &quot;Male&quot;, &quot;Male&quot;, &quot;Male&quot;, &quot;Female&quot;, &quot;Female&quot;,…
+## $ SeniorCitizen    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ Partner          &lt;chr&gt; &quot;Yes&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Yes…
+## $ Dependents       &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;No&quot;…
+## $ tenure           &lt;dbl&gt; 1, 34, 2, 45, 2, 8, 22, 10, 28, 62, 13, 16, 58, 49, 2…
+## $ PhoneService     &lt;chr&gt; &quot;No&quot;, &quot;Yes&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;Yes&quot;, &quot;Yes&quot;, &quot;No&quot;, …
+## $ MultipleLines    &lt;chr&gt; &quot;No phone service&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No phone service&quot;, &quot;…
+## $ InternetService  &lt;chr&gt; &quot;DSL&quot;, &quot;DSL&quot;, &quot;DSL&quot;, &quot;DSL&quot;, &quot;Fiber optic&quot;, &quot;Fiber opt…
+## $ OnlineSecurity   &lt;chr&gt; &quot;No&quot;, &quot;Yes&quot;, &quot;Yes&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;…
+## $ OnlineBackup     &lt;chr&gt; &quot;Yes&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;N…
+## $ DeviceProtection &lt;chr&gt; &quot;No&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Y…
+## $ TechSupport      &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Yes…
+## $ StreamingTV      &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;Ye…
+## $ StreamingMovies  &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Yes…
+## $ Contract         &lt;chr&gt; &quot;Month-to-month&quot;, &quot;One year&quot;, &quot;Month-to-month&quot;, &quot;One …
+## $ PaperlessBilling &lt;chr&gt; &quot;Yes&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;Yes&quot;, &quot;Yes&quot;, &quot;No&quot;, …
+## $ PaymentMethod    &lt;chr&gt; &quot;Electronic check&quot;, &quot;Mailed check&quot;, &quot;Mailed check&quot;, &quot;…
+## $ MonthlyCharges   &lt;dbl&gt; 29.85, 56.95, 53.85, 42.30, 70.70, 99.65, 89.10, 29.7…
+## $ TotalCharges     &lt;dbl&gt; 29.85, 1889.50, 108.15, 1840.75, 151.65, 820.50, 1949…
+## $ Churn            &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Y…</code></pre>
+<pre class="r"><code># Removes 21 observations
+churn &lt;- na.omit(churn)
+glimpse(churn)</code></pre>
+<pre><code>## Rows: 7,032
+## Columns: 21
+## $ customerID       &lt;chr&gt; &quot;7590-VHVEG&quot;, &quot;5575-GNVDE&quot;, &quot;3668-QPYBK&quot;, &quot;7795-CFOCW…
+## $ gender           &lt;chr&gt; &quot;Female&quot;, &quot;Male&quot;, &quot;Male&quot;, &quot;Male&quot;, &quot;Female&quot;, &quot;Female&quot;,…
+## $ SeniorCitizen    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ Partner          &lt;chr&gt; &quot;Yes&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Yes…
+## $ Dependents       &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;No&quot;…
+## $ tenure           &lt;dbl&gt; 1, 34, 2, 45, 2, 8, 22, 10, 28, 62, 13, 16, 58, 49, 2…
+## $ PhoneService     &lt;chr&gt; &quot;No&quot;, &quot;Yes&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;Yes&quot;, &quot;Yes&quot;, &quot;No&quot;, …
+## $ MultipleLines    &lt;chr&gt; &quot;No phone service&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No phone service&quot;, &quot;…
+## $ InternetService  &lt;chr&gt; &quot;DSL&quot;, &quot;DSL&quot;, &quot;DSL&quot;, &quot;DSL&quot;, &quot;Fiber optic&quot;, &quot;Fiber opt…
+## $ OnlineSecurity   &lt;chr&gt; &quot;No&quot;, &quot;Yes&quot;, &quot;Yes&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;…
+## $ OnlineBackup     &lt;chr&gt; &quot;Yes&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;N…
+## $ DeviceProtection &lt;chr&gt; &quot;No&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Y…
+## $ TechSupport      &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Yes…
+## $ StreamingTV      &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;Ye…
+## $ StreamingMovies  &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Yes…
+## $ Contract         &lt;chr&gt; &quot;Month-to-month&quot;, &quot;One year&quot;, &quot;Month-to-month&quot;, &quot;One …
+## $ PaperlessBilling &lt;chr&gt; &quot;Yes&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;Yes&quot;, &quot;Yes&quot;, &quot;No&quot;, …
+## $ PaymentMethod    &lt;chr&gt; &quot;Electronic check&quot;, &quot;Mailed check&quot;, &quot;Mailed check&quot;, &quot;…
+## $ MonthlyCharges   &lt;dbl&gt; 29.85, 56.95, 53.85, 42.30, 70.70, 99.65, 89.10, 29.7…
+## $ TotalCharges     &lt;dbl&gt; 29.85, 1889.50, 108.15, 1840.75, 151.65, 820.50, 1949…
+## $ Churn            &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Y…</code></pre>
+<pre class="r"><code>summary(churn)</code></pre>
+<pre><code>##   customerID           gender          SeniorCitizen      Partner         
+##  Length:7032        Length:7032        Min.   :0.0000   Length:7032       
+##  Class :character   Class :character   1st Qu.:0.0000   Class :character  
+##  Mode  :character   Mode  :character   Median :0.0000   Mode  :character  
+##                                        Mean   :0.1624                     
+##                                        3rd Qu.:0.0000                     
+##                                        Max.   :1.0000                     
+##   Dependents            tenure      PhoneService       MultipleLines     
+##  Length:7032        Min.   : 1.00   Length:7032        Length:7032       
+##  Class :character   1st Qu.: 9.00   Class :character   Class :character  
+##  Mode  :character   Median :29.00   Mode  :character   Mode  :character  
+##                     Mean   :32.42                                        
+##                     3rd Qu.:55.00                                        
+##                     Max.   :72.00                                        
+##  InternetService    OnlineSecurity     OnlineBackup       DeviceProtection  
+##  Length:7032        Length:7032        Length:7032        Length:7032       
+##  Class :character   Class :character   Class :character   Class :character  
+##  Mode  :character   Mode  :character   Mode  :character   Mode  :character  
+##                                                                             
+##                                                                             
+##                                                                             
+##  TechSupport        StreamingTV        StreamingMovies      Contract        
+##  Length:7032        Length:7032        Length:7032        Length:7032       
+##  Class :character   Class :character   Class :character   Class :character  
+##  Mode  :character   Mode  :character   Mode  :character   Mode  :character  
+##                                                                             
+##                                                                             
+##                                                                             
+##  PaperlessBilling   PaymentMethod      MonthlyCharges    TotalCharges   
+##  Length:7032        Length:7032        Min.   : 18.25   Min.   :  18.8  
+##  Class :character   Class :character   1st Qu.: 35.59   1st Qu.: 401.4  
+##  Mode  :character   Mode  :character   Median : 70.35   Median :1397.5  
+##                                        Mean   : 64.80   Mean   :2283.3  
+##                                        3rd Qu.: 89.86   3rd Qu.:3794.7  
+##                                        Max.   :118.75   Max.   :8684.8  
+##     Churn          
+##  Length:7032       
+##  Class :character  
+##  Mode  :character  
+##                    
+##                    
+## </code></pre>
+</div>
+<div id="outcome-variable" class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> Outcome Variable</h2>
+<pre class="r"><code>table(churn$Churn)</code></pre>
+<pre><code>## 
+##   No  Yes 
+## 5163 1869</code></pre>
+<p>There are many more observations for customers who did not churn,
+which may make any model biased towards predicting no churn.</p>
+</div>
+<div id="character-variables" class="section level2" number="1.3">
+<h2><span class="header-section-number">1.3</span> Character
+Variables</h2>
+<pre class="r"><code># Select character variables
+names(churn)[map_lgl(churn, is.character)]</code></pre>
+<pre><code>##  [1] &quot;customerID&quot;       &quot;gender&quot;           &quot;Partner&quot;          &quot;Dependents&quot;      
+##  [5] &quot;PhoneService&quot;     &quot;MultipleLines&quot;    &quot;InternetService&quot;  &quot;OnlineSecurity&quot;  
+##  [9] &quot;OnlineBackup&quot;     &quot;DeviceProtection&quot; &quot;TechSupport&quot;      &quot;StreamingTV&quot;     
+## [13] &quot;StreamingMovies&quot;  &quot;Contract&quot;         &quot;PaperlessBilling&quot; &quot;PaymentMethod&quot;   
+## [17] &quot;Churn&quot;</code></pre>
+<pre class="r"><code># create a vector of character variables
+char_vars &lt;- c(&quot;gender&quot;,&quot;Partner&quot;,&quot;Dependents&quot;,&quot;PhoneService&quot;,&quot;MultipleLines&quot;,&quot;InternetService&quot;,&quot;OnlineSecurity&quot;,&quot;OnlineBackup&quot;,&quot;DeviceProtection&quot;,&quot;TechSupport&quot;,&quot;StreamingTV&quot;,&quot;StreamingMovies&quot;,&quot;Contract&quot;,&quot;PaperlessBilling&quot;,&quot;PaymentMethod&quot;)</code></pre>
+<div id="category-counts" class="section level3" number="1.3.1">
+<h3><span class="header-section-number">1.3.1</span> Category
+Counts</h3>
+<p>This section checks to see if there are any categories with very few
+observations for each of the categorical variables.</p>
+<pre class="r"><code>for (var in char_vars) {
+  print(var)
+  print(table(churn[[var]]))
+}</code></pre>
+<pre><code>## [1] &quot;gender&quot;
+## 
+## Female   Male 
+##   3483   3549 
+## [1] &quot;Partner&quot;
+## 
+##   No  Yes 
+## 3639 3393 
+## [1] &quot;Dependents&quot;
+## 
+##   No  Yes 
+## 4933 2099 
+## [1] &quot;PhoneService&quot;
+## 
+##   No  Yes 
+##  680 6352 
+## [1] &quot;MultipleLines&quot;
+## 
+##               No No phone service              Yes 
+##             3385              680             2967 
+## [1] &quot;InternetService&quot;
+## 
+##         DSL Fiber optic          No 
+##        2416        3096        1520 
+## [1] &quot;OnlineSecurity&quot;
+## 
+##                  No No internet service                 Yes 
+##                3497                1520                2015 
+## [1] &quot;OnlineBackup&quot;
+## 
+##                  No No internet service                 Yes 
+##                3087                1520                2425 
+## [1] &quot;DeviceProtection&quot;
+## 
+##                  No No internet service                 Yes 
+##                3094                1520                2418 
+## [1] &quot;TechSupport&quot;
+## 
+##                  No No internet service                 Yes 
+##                3472                1520                2040 
+## [1] &quot;StreamingTV&quot;
+## 
+##                  No No internet service                 Yes 
+##                2809                1520                2703 
+## [1] &quot;StreamingMovies&quot;
+## 
+##                  No No internet service                 Yes 
+##                2781                1520                2731 
+## [1] &quot;Contract&quot;
+## 
+## Month-to-month       One year       Two year 
+##           3875           1472           1685 
+## [1] &quot;PaperlessBilling&quot;
+## 
+##   No  Yes 
+## 2864 4168 
+## [1] &quot;PaymentMethod&quot;
+## 
+## Bank transfer (automatic)   Credit card (automatic)          Electronic check 
+##                      1542                      1521                      2365 
+##              Mailed check 
+##                      1604</code></pre>
+<p>While there are some variables that have an imbalance of counts for
+each category, for the most part, every categorical variable has enough
+observations with in each category.</p>
+</div>
+<div id="chi-square-test-bar-plots" class="section level3"
+number="1.3.2">
+<h3><span class="header-section-number">1.3.2</span> Chi Square Test Bar
+Plots</h3>
+<pre class="r"><code>table(churn$gender,churn$Churn)</code></pre>
+<pre><code>##         
+##            No  Yes
+##   Female 2544  939
+##   Male   2619  930</code></pre>
+<pre class="r"><code>chisq.test(table(churn$gender,churn$Churn)) </code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test with Yates&#39; continuity correction
+## 
+## data:  table(churn$gender, churn$Churn)
+## X-squared = 0.47545, df = 1, p-value = 0.4905</code></pre>
+<pre class="r"><code>ggplot(churn, aes(x = factor(gender), fill = factor(Churn))) +
+    geom_bar(position = &quot;fill&quot;) +
+    labs(title = &quot;Churn Rate by Gender&quot;, x = &quot;Gender&quot;, y = &quot;Proportion&quot;)</code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/Gender-1.png" width="672" /></p>
+<pre class="r"><code>table(churn$SeniorCitizen,churn$Churn)</code></pre>
+<pre><code>##    
+##       No  Yes
+##   0 4497 1393
+##   1  666  476</code></pre>
+<pre class="r"><code>chisq.test(table(churn$SeniorCitizen,churn$Churn)) </code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test with Yates&#39; continuity correction
+## 
+## data:  table(churn$SeniorCitizen, churn$Churn)
+## X-squared = 158.44, df = 1, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code>ggplot(churn, aes(x = factor(SeniorCitizen), fill = factor(Churn))) +
+    geom_bar(position = &quot;fill&quot;) +
+    labs(title = &quot;Churn Rate by SeniorCitizen Status&quot;, x = &quot;SeniorCitizen&quot;, y = &quot;Proportion&quot;)</code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/SeniorCitizen-1.png" width="672" /></p>
+<pre class="r"><code>table(churn$Partner,churn$Churn)</code></pre>
+<pre><code>##      
+##         No  Yes
+##   No  2439 1200
+##   Yes 2724  669</code></pre>
+<pre class="r"><code>chisq.test(table(churn$Partner,churn$Churn))</code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test with Yates&#39; continuity correction
+## 
+## data:  table(churn$Partner, churn$Churn)
+## X-squared = 157.5, df = 1, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code>ggplot(churn, aes(x = factor(Partner), fill = factor(Churn))) +
+    geom_bar(position = &quot;fill&quot;) +
+    labs(title = &quot;Churn Rate by Partner Status&quot;, x = &quot;Partner&quot;, y = &quot;Proportion&quot;)</code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/Partner-1.png" width="672" /></p>
+<pre class="r"><code>table(churn$Dependents,churn$Churn)</code></pre>
+<pre><code>##      
+##         No  Yes
+##   No  3390 1543
+##   Yes 1773  326</code></pre>
+<pre class="r"><code>chisq.test(table(churn$Dependents,churn$Churn)) </code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test with Yates&#39; continuity correction
+## 
+## data:  table(churn$Dependents, churn$Churn)
+## X-squared = 186.32, df = 1, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code>ggplot(churn, aes(x = factor(Dependents), fill = factor(Churn))) +
+    geom_bar(position = &quot;fill&quot;) +
+    labs(title = &quot;Churn Rate by Dependents&quot;, x = &quot;Dependents&quot;, y = &quot;Proportion&quot;)</code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/Dependents-1.png" width="672" /></p>
+<pre class="r"><code>table(churn$PhoneService,churn$Churn)</code></pre>
+<pre><code>##      
+##         No  Yes
+##   No   510  170
+##   Yes 4653 1699</code></pre>
+<pre class="r"><code>chisq.test(table(churn$PhoneService,churn$Churn))</code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test with Yates&#39; continuity correction
+## 
+## data:  table(churn$PhoneService, churn$Churn)
+## X-squared = 0.87373, df = 1, p-value = 0.3499</code></pre>
+<pre class="r"><code>ggplot(churn, aes(x = factor(PhoneService), fill = factor(Churn))) +
+    geom_bar(position = &quot;fill&quot;) +
+    labs(title = &quot;Churn Rate by PhoneService&quot;, x = &quot;PhoneService&quot;, y = &quot;Proportion&quot;)</code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/PhoneService-1.png" width="672" /></p>
+<pre class="r"><code>table(churn$MultipleLines,churn$Churn)</code></pre>
+<pre><code>##                   
+##                      No  Yes
+##   No               2536  849
+##   No phone service  510  170
+##   Yes              2117  850</code></pre>
+<pre class="r"><code>chisq.test(table(churn$MultipleLines,churn$Churn)) </code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  table(churn$MultipleLines, churn$Churn)
+## X-squared = 11.272, df = 2, p-value = 0.003568</code></pre>
+<pre class="r"><code>ggplot(churn, aes(x = factor(MultipleLines), fill = factor(Churn))) +
+    geom_bar(position = &quot;fill&quot;) +
+    labs(title = &quot;Churn Rate by MultipleLines&quot;, x = &quot;MultipleLines&quot;, y = &quot;Proportion&quot;)</code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/MultipleLines-1.png" width="672" /></p>
+<pre class="r"><code>table(churn$InternetService,churn$Churn)</code></pre>
+<pre><code>##              
+##                 No  Yes
+##   DSL         1957  459
+##   Fiber optic 1799 1297
+##   No          1407  113</code></pre>
+<pre class="r"><code>chisq.test(table(churn$InternetService,churn$Churn)) </code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  table(churn$InternetService, churn$Churn)
+## X-squared = 728.7, df = 2, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code>ggplot(churn, aes(x = factor(InternetService), fill = factor(Churn))) +
+    geom_bar(position = &quot;fill&quot;) +
+    labs(title = &quot;Churn Rate by InternetService&quot;, x = &quot;InternetService&quot;, y = &quot;Proportion&quot;) </code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/InternetService-1.png" width="672" /></p>
+<pre class="r"><code>table(churn$OnlineSecurity,churn$Churn)</code></pre>
+<pre><code>##                      
+##                         No  Yes
+##   No                  2036 1461
+##   No internet service 1407  113
+##   Yes                 1720  295</code></pre>
+<pre class="r"><code>chisq.test(table(churn$OnlineSecurity,churn$Churn)) </code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  table(churn$OnlineSecurity, churn$Churn)
+## X-squared = 846.68, df = 2, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code>ggplot(churn, aes(x = factor(OnlineSecurity), fill = factor(Churn))) +
+    geom_bar(position = &quot;fill&quot;) +
+    labs(title = &quot;Churn Rate by OnlineSecurity&quot;, x = &quot;OnlineSecurity&quot;, y = &quot;Proportion&quot;)  </code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/OnlineSecurity-1.png" width="672" /></p>
+<pre class="r"><code>table(churn$OnlineBackup,churn$Churn)</code></pre>
+<pre><code>##                      
+##                         No  Yes
+##   No                  1854 1233
+##   No internet service 1407  113
+##   Yes                 1902  523</code></pre>
+<pre class="r"><code>chisq.test(table(churn$OnlineBackup,churn$Churn))</code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  table(churn$OnlineBackup, churn$Churn)
+## X-squared = 599.18, df = 2, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code>ggplot(churn, aes(x = factor(OnlineBackup), fill = factor(Churn))) +
+    geom_bar(position = &quot;fill&quot;) +
+    labs(title = &quot;Churn Rate by OnlineBackup&quot;, x = &quot;OnlineBackup&quot;, y = &quot;Proportion&quot;)</code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/OnlineBackup-1.png" width="672" /></p>
+<pre class="r"><code>table(churn$DeviceProtection,churn$Churn)</code></pre>
+<pre><code>##                      
+##                         No  Yes
+##   No                  1883 1211
+##   No internet service 1407  113
+##   Yes                 1873  545</code></pre>
+<pre class="r"><code>chisq.test(table(churn$DeviceProtection,churn$Churn))</code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  table(churn$DeviceProtection, churn$Churn)
+## X-squared = 555.88, df = 2, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code>ggplot(churn, aes(x = factor(DeviceProtection), fill = factor(Churn))) +
+    geom_bar(position = &quot;fill&quot;) +
+    labs(title = &quot;Churn Rate by DeviceProtection&quot;, x = &quot;DeviceProtection&quot;, y = &quot;Proportion&quot;) </code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/DeviceProtection-1.png" width="672" /></p>
+<pre class="r"><code>table(churn$TechSupport,churn$Churn)</code></pre>
+<pre><code>##                      
+##                         No  Yes
+##   No                  2026 1446
+##   No internet service 1407  113
+##   Yes                 1730  310</code></pre>
+<pre class="r"><code>chisq.test(table(churn$TechSupport,churn$Churn))</code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  table(churn$TechSupport, churn$Churn)
+## X-squared = 824.93, df = 2, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code>ggplot(churn, aes(x = factor(TechSupport), fill = factor(Churn))) +
+    geom_bar(position = &quot;fill&quot;) +
+    labs(title = &quot;Churn Rate by TechSupport&quot;, x = &quot;TechSupport&quot;, y = &quot;Proportion&quot;)  </code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/TechSupport-1.png" width="672" /></p>
+<pre class="r"><code>table(churn$StreamingTV,churn$Churn)</code></pre>
+<pre><code>##                      
+##                         No  Yes
+##   No                  1867  942
+##   No internet service 1407  113
+##   Yes                 1889  814</code></pre>
+<pre class="r"><code>chisq.test(table(churn$StreamingTV,churn$Churn))</code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  table(churn$StreamingTV, churn$Churn)
+## X-squared = 372.46, df = 2, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code>ggplot(churn, aes(x = factor(StreamingTV), fill = factor(Churn))) +
+    geom_bar(position = &quot;fill&quot;) +
+    labs(title = &quot;Churn Rate by StreamingTV&quot;, x = &quot;StreamingTV&quot;, y = &quot;Proportion&quot;) </code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/StreamingTV-1.png" width="672" /></p>
+<pre class="r"><code>table(churn$StreamingMovies,churn$Churn)</code></pre>
+<pre><code>##                      
+##                         No  Yes
+##   No                  1843  938
+##   No internet service 1407  113
+##   Yes                 1913  818</code></pre>
+<pre class="r"><code>chisq.test(table(churn$StreamingMovies,churn$Churn))</code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  table(churn$StreamingMovies, churn$Churn)
+## X-squared = 374.27, df = 2, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code>ggplot(churn, aes(x = factor(StreamingMovies), fill = factor(Churn))) +
+    geom_bar(position = &quot;fill&quot;) +
+    labs(title = &quot;Churn Rate by StreamingMovies&quot;, x = &quot;StreamingMovies&quot;, y = &quot;Proportion&quot;)  </code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/StreamingMovies-1.png" width="672" /></p>
+<pre class="r"><code>table(churn$Contract,churn$Churn)</code></pre>
+<pre><code>##                 
+##                    No  Yes
+##   Month-to-month 2220 1655
+##   One year       1306  166
+##   Two year       1637   48</code></pre>
+<pre class="r"><code>chisq.test(table(churn$Contract,churn$Churn))</code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  table(churn$Contract, churn$Churn)
+## X-squared = 1179.5, df = 2, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code>ggplot(churn, aes(x = factor(Contract), fill = factor(Churn))) +
+    geom_bar(position = &quot;fill&quot;) +
+    labs(title = &quot;Churn Rate by Contract&quot;, x = &quot;Contract&quot;, y = &quot;Proportion&quot;) </code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/Contract-1.png" width="672" /></p>
+<pre class="r"><code>table(churn$PaperlessBilling,churn$Churn)</code></pre>
+<pre><code>##      
+##         No  Yes
+##   No  2395  469
+##   Yes 2768 1400</code></pre>
+<pre class="r"><code>chisq.test(table(churn$PaperlessBilling,churn$Churn))</code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test with Yates&#39; continuity correction
+## 
+## data:  table(churn$PaperlessBilling, churn$Churn)
+## X-squared = 256.87, df = 1, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code>ggplot(churn, aes(x = factor(PaperlessBilling), fill = factor(Churn))) +
+    geom_bar(position = &quot;fill&quot;) +
+    labs(title = &quot;Churn Rate by PaperlessBilling&quot;, x = &quot;PaperlessBilling&quot;, y = &quot;Proportion&quot;) </code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/PaperlessBilling-1.png" width="672" /></p>
+<pre class="r"><code>table(churn$PaymentMethod,churn$Churn)</code></pre>
+<pre><code>##                            
+##                               No  Yes
+##   Bank transfer (automatic) 1284  258
+##   Credit card (automatic)   1289  232
+##   Electronic check          1294 1071
+##   Mailed check              1296  308</code></pre>
+<pre class="r"><code>chisq.test(table(churn$PaymentMethod,churn$Churn))</code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  table(churn$PaymentMethod, churn$Churn)
+## X-squared = 645.43, df = 3, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code>ggplot(churn, aes(x = factor(PaymentMethod), fill = factor(Churn))) +
+    geom_bar(position = &quot;fill&quot;) +
+    labs(title = &quot;Churn Rate by PaymentMethod&quot;, x = &quot;PaymentMethod&quot;, y = &quot;Proportion&quot;) </code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/PaymentMethod-1.png" width="672" /></p>
+</div>
+</div>
+<div id="numeric-variables" class="section level2" number="1.4">
+<h2><span class="header-section-number">1.4</span> Numeric
+Variables</h2>
+<div id="boxplots" class="section level3" number="1.4.1">
+<h3><span class="header-section-number">1.4.1</span> BoxPlots</h3>
+<pre class="r"><code>boxplot(MonthlyCharges~Churn, data = churn)</code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/MonthlyCharges-1.png" width="672" /></p>
+<pre class="r"><code>boxplot(tenure~Churn, data = churn)</code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/tenure-1.png" width="672" /></p>
+<pre class="r"><code>boxplot(TotalCharges~Churn, data = churn)</code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/TotalCharges-1.png" width="672" /></p>
+</div>
+<div id="distributions" class="section level3" number="1.4.2">
+<h3><span class="header-section-number">1.4.2</span> Distributions</h3>
+<p>MonthlyCharges, tenure, and TotalCharges</p>
+<pre class="r"><code>par(mfrow=c(2,3))
+
+hist(churn$MonthlyCharges)
+hist(churn$tenure)
+hist(churn$TotalCharges)
+
+hist(log(churn$MonthlyCharges))
+hist(log(churn$tenure))
+hist(log(churn$TotalCharges))</code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/numeric%20distributions-1.png" width="672" /></p>
+<p>The numeric predictors are not normally distributed which may lead to
+the model having greater predictor power given certain values of
+predictors rather than others.</p>
+</div>
+</div>
+</div>
+<div id="model-assumptions" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Model Assumptions</h1>
+<div id="significant-predictors" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Significant
+predictors</h2>
+<p>Section A.1.3.2 shows the outcome of chi-square tests to assess the
+relationship between each variable and the outcome variable, Churn.
+These tests determined that the following variables are significantly
+related to Churn: SeniorCitizen, Partner, Dependents, MultipleLines,
+InternetService, OnlineSecurity, OnlineBackup, DeviceProtection,
+TechSupport, StreamingTV, StreamingMovies, Contract, PaperlessBilling
+and PaymentMethod. And all numeric variables, Tenure, MonthlyCharges,
+and TotalCharges have significantly different means for Churn
+status.</p>
+<pre class="r"><code># Fit an initial model to further determine variable significance.
+churn$Churn &lt;- ifelse(churn$Churn == &#39;Yes&#39;,1,0)
+churn.fit &lt;- glm(Churn~.-customerID,family=binomial(link=&quot;logit&quot;),data = churn)
+summary(churn.fit)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = Churn ~ . - customerID, family = binomial(link = &quot;logit&quot;), 
+##     data = churn)
+## 
+## Coefficients: (7 not defined because of singularities)
+##                                        Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)                           1.165e+00  8.151e-01   1.430  0.15284    
+## genderMale                           -2.183e-02  6.480e-02  -0.337  0.73619    
+## SeniorCitizen                         2.168e-01  8.453e-02   2.564  0.01033 *  
+## PartnerYes                           -3.840e-04  7.783e-02  -0.005  0.99606    
+## DependentsYes                        -1.485e-01  8.973e-02  -1.655  0.09796 .  
+## tenure                               -6.059e-02  6.236e-03  -9.716  &lt; 2e-16 ***
+## PhoneServiceYes                       1.715e-01  6.487e-01   0.264  0.79153    
+## MultipleLinesNo phone service                NA         NA      NA       NA    
+## MultipleLinesYes                      4.484e-01  1.773e-01   2.530  0.01142 *  
+## InternetServiceFiber optic            1.747e+00  7.981e-01   2.190  0.02855 *  
+## InternetServiceNo                    -1.786e+00  8.073e-01  -2.213  0.02691 *  
+## OnlineSecurityNo internet service            NA         NA      NA       NA    
+## OnlineSecurityYes                    -2.054e-01  1.787e-01  -1.150  0.25031    
+## OnlineBackupNo internet service              NA         NA      NA       NA    
+## OnlineBackupYes                       2.604e-02  1.754e-01   0.148  0.88197    
+## DeviceProtectionNo internet service          NA         NA      NA       NA    
+## DeviceProtectionYes                   1.474e-01  1.764e-01   0.836  0.40339    
+## TechSupportNo internet service               NA         NA      NA       NA    
+## TechSupportYes                       -1.805e-01  1.806e-01  -0.999  0.31759    
+## StreamingTVNo internet service               NA         NA      NA       NA    
+## StreamingTVYes                        5.905e-01  3.263e-01   1.810  0.07035 .  
+## StreamingMoviesNo internet service           NA         NA      NA       NA    
+## StreamingMoviesYes                    5.993e-01  3.267e-01   1.834  0.06658 .  
+## ContractOne year                     -6.608e-01  1.076e-01  -6.142 8.15e-10 ***
+## ContractTwo year                     -1.357e+00  1.764e-01  -7.691 1.46e-14 ***
+## PaperlessBillingYes                   3.424e-01  7.450e-02   4.596 4.31e-06 ***
+## PaymentMethodCredit card (automatic) -8.779e-02  1.141e-01  -0.770  0.44156    
+## PaymentMethodElectronic check         3.045e-01  9.450e-02   3.222  0.00127 ** 
+## PaymentMethodMailed check            -5.759e-02  1.149e-01  -0.501  0.61627    
+## MonthlyCharges                       -4.034e-02  3.176e-02  -1.270  0.20392    
+## TotalCharges                          3.289e-04  7.063e-05   4.657 3.20e-06 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 8143.4  on 7031  degrees of freedom
+## Residual deviance: 5826.3  on 7008  degrees of freedom
+## AIC: 5874.3
+## 
+## Number of Fisher Scoring iterations: 6</code></pre>
+<pre class="r"><code>require(coefplot)
+coefplot(churn.fit)</code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/churn.fit-1.png" width="672" /></p>
+<p>This model indicates that considering all variables available, the
+following variables are significantly related to Churn.</p>
+<pre class="r"><code>churn.fit.reduced &lt;- glm(Churn~SeniorCitizen+tenure+MultipleLines+InternetService+Contract+PaperlessBilling+PaymentMethod+TotalCharges,family=binomial(link=&quot;logit&quot;),data = churn)
+summary(churn.fit.reduced)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = Churn ~ SeniorCitizen + tenure + MultipleLines + 
+##     InternetService + Contract + PaperlessBilling + PaymentMethod + 
+##     TotalCharges, family = binomial(link = &quot;logit&quot;), data = churn)
+## 
+## Coefficients:
+##                                        Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)                          -0.7524686  0.1216481  -6.186 6.19e-10 ***
+## SeniorCitizen                         0.2838042  0.0820511   3.459 0.000542 ***
+## tenure                               -0.0623101  0.0059172 -10.530  &lt; 2e-16 ***
+## MultipleLinesNo phone service         0.7163172  0.1296922   5.523 3.33e-08 ***
+## MultipleLinesYes                      0.2794728  0.0788261   3.545 0.000392 ***
+## InternetServiceFiber optic            0.9105034  0.0951849   9.566  &lt; 2e-16 ***
+## InternetServiceNo                    -0.5347664  0.1307872  -4.089 4.34e-05 ***
+## ContractOne year                     -0.7177526  0.1051426  -6.826 8.70e-12 ***
+## ContractTwo year                     -1.5309937  0.1736988  -8.814  &lt; 2e-16 ***
+## PaperlessBillingYes                   0.3843680  0.0734646   5.232 1.68e-07 ***
+## PaymentMethodCredit card (automatic) -0.0969663  0.1131124  -0.857 0.391303    
+## PaymentMethodElectronic check         0.3697148  0.0934143   3.958 7.56e-05 ***
+## PaymentMethodMailed check            -0.0803387  0.1135281  -0.708 0.479160    
+## TotalCharges                          0.0003168  0.0000630   5.029 4.94e-07 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 8143.4  on 7031  degrees of freedom
+## Residual deviance: 5899.8  on 7018  degrees of freedom
+## AIC: 5927.8
+## 
+## Number of Fisher Scoring iterations: 6</code></pre>
+<p>But we will use variable selection to determine the ultimate best
+model.</p>
+</div>
+<div id="multicollinearity" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span>
+Multicollinearity</h2>
+<pre class="r"><code># Xs are independent (uncorrelated)
+cond.index(churn.fit, data=churn)</code></pre>
+<pre><code>##  [1] 1.000000e+00 1.361638e+00 2.737057e+00 3.255377e+00 3.637219e+00
+##  [6] 3.720449e+00 3.993979e+00 4.232393e+00 4.362516e+00 4.723229e+00
+## [11] 5.126693e+00 5.241772e+00 5.355070e+00 5.635948e+00 5.751611e+00
+## [16] 6.355325e+00 6.648467e+00 6.716715e+00 6.907980e+00 7.422290e+00
+## [21] 9.573179e+00 1.117690e+01 2.289433e+01 2.812095e+02 8.631410e+07
+## [26] 1.021002e+08 1.021002e+08 1.021002e+08 1.021002e+08 1.021002e+08
+## [31] 1.021002e+08</code></pre>
+<pre class="r"><code>cond.index(churn.fit.reduced, data=churn)</code></pre>
+<pre><code>##  [1]  1.000000  1.851448  2.188398  2.371296  2.496958  2.842187  3.032654
+##  [8]  3.195287  4.156824  4.535447  5.204044  6.324844  9.710559 13.676272</code></pre>
+<p>The CI for the full model is very high at 102,100,200. The reduced
+model with only variables signficant the 95 percent level has a much
+lower CI.</p>
+<pre class="r"><code>vif(churn.fit.reduced)</code></pre>
+<pre><code>##                       GVIF Df GVIF^(1/(2*Df))
+## SeniorCitizen     1.085653  1        1.041947
+## tenure           14.365387  1        3.790170
+## MultipleLines     1.903615  2        1.174613
+## InternetService   2.350769  2        1.238233
+## Contract          1.515189  2        1.109473
+## PaperlessBilling  1.113868  1        1.055399
+## PaymentMethod     1.340114  3        1.050002
+## TotalCharges     16.454504  1        4.056415</code></pre>
+<p>None of the variance inflation factors for the variables in the
+reduced model exceeds the threshold of 10.</p>
+</div>
+<div id="outliers-variable-distributions" class="section level2"
+number="2.3">
+<h2><span class="header-section-number">2.3</span> Outliers &amp;
+Variable Distributions</h2>
+<p>Severe outliers do not appear to be a problem for any of the
+variables, but all variables do have either a non-normal, skewed, or
+slightly unbalanced distributions. Therefore, this dataset is likely to
+produce models with high variation.</p>
+<pre class="r"><code>plot(churn.fit.reduced, which = 3)</code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/outlier%20plots-1.png" width="672" /></p>
+<pre class="r"><code>plot(churn.fit.reduced, which = 4)</code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/outlier%20plots-2.png" width="672" /></p>
+<pre class="r"><code>churn[c(269,4266,4812),c(&quot;SeniorCitizen&quot;,&quot;tenure&quot;,&quot;MultipleLines&quot;,&quot;InternetService&quot;,&quot;Contract&quot;,&quot;PaperlessBilling&quot;,&quot;PaymentMethod&quot;,&quot;TotalCharges&quot;)]</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["SeniorCitizen"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["tenure"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["MultipleLines"],"name":[3],"type":["chr"],"align":["left"]},{"label":["InternetService"],"name":[4],"type":["chr"],"align":["left"]},{"label":["Contract"],"name":[5],"type":["chr"],"align":["left"]},{"label":["PaperlessBilling"],"name":[6],"type":["chr"],"align":["left"]},{"label":["PaymentMethod"],"name":[7],"type":["chr"],"align":["left"]},{"label":["TotalCharges"],"name":[8],"type":["dbl"],"align":["right"]}],"data":[{"1":"0","2":"59","3":"No","4":"No","5":"Two year","6":"No","7":"Mailed check","8":"1099.60"},{"1":"0","2":"56","3":"Yes","4":"No","5":"Two year","6":"Yes","7":"Credit card (automatic)","8":"1327.15"},{"1":"0","2":"53","3":"No","4":"No","5":"Two year","6":"No","7":"Bank transfer (automatic)","8":"1052.35"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<pre class="r"><code>summary(churn[,c(&quot;SeniorCitizen&quot;,&quot;tenure&quot;,&quot;MultipleLines&quot;,&quot;InternetService&quot;,&quot;Contract&quot;,&quot;PaperlessBilling&quot;,&quot;PaymentMethod&quot;,&quot;TotalCharges&quot;)])</code></pre>
+<pre><code>##  SeniorCitizen        tenure      MultipleLines      InternetService   
+##  Min.   :0.0000   Min.   : 1.00   Length:7032        Length:7032       
+##  1st Qu.:0.0000   1st Qu.: 9.00   Class :character   Class :character  
+##  Median :0.0000   Median :29.00   Mode  :character   Mode  :character  
+##  Mean   :0.1624   Mean   :32.42                                        
+##  3rd Qu.:0.0000   3rd Qu.:55.00                                        
+##  Max.   :1.0000   Max.   :72.00                                        
+##    Contract         PaperlessBilling   PaymentMethod       TotalCharges   
+##  Length:7032        Length:7032        Length:7032        Min.   :  18.8  
+##  Class :character   Class :character   Class :character   1st Qu.: 401.4  
+##  Mode  :character   Mode  :character   Mode  :character   Median :1397.5  
+##                                                           Mean   :2283.3  
+##                                                           3rd Qu.:3794.7  
+##                                                           Max.   :8684.8</code></pre>
+<p>These three customers, c(269,4266,4812), are identified as potential
+influential observations. This may be because they have longer than
+average tenure as customers, all close to the 75th percentile of tenure
+length among the entire dataset.</p>
+</div>
+<div id="linearity" class="section level2" number="2.4">
+<h2><span class="header-section-number">2.4</span> Linearity</h2>
+<p>Relationship between log-odds of Churn and numeric predictors.
+[Linearity of numeric predictors for logit models] (<a
+href="https://stats.stackexchange.com/questions/169348/how-should-i-check-the-assumption-of-linearity-to-the-logit-for-the-continuous-i"
+class="uri">https://stats.stackexchange.com/questions/169348/how-should-i-check-the-assumption-of-linearity-to-the-logit-for-the-continuous-i</a>)</p>
+<pre class="r"><code>summary(churn[,c(&#39;tenure&#39;,&#39;TotalCharges&#39;)])</code></pre>
+<pre><code>##      tenure       TotalCharges   
+##  Min.   : 1.00   Min.   :  18.8  
+##  1st Qu.: 9.00   1st Qu.: 401.4  
+##  Median :29.00   Median :1397.5  
+##  Mean   :32.42   Mean   :2283.3  
+##  3rd Qu.:55.00   3rd Qu.:3794.7  
+##  Max.   :72.00   Max.   :8684.8</code></pre>
+<pre class="r"><code>par(mfrow=c(1,2))
+churn.fit.num &lt;- glm(Churn~tenure+TotalCharges,family=binomial(link=&quot;logit&quot;), data = churn)
+
+log.odds &lt;- predict(churn.fit.num, type = &quot;link&quot;)
+
+plot(churn$tenure,log.odds)
+plot(churn$TotalCharges,log.odds)</code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/churn.fit.num-1.png" width="672" /></p>
+<pre class="r"><code>odds &lt;- exp(log.odds)
+
+probabilities &lt;- odds/(1+odds)</code></pre>
+</div>
+</div>
+<div id="variable-selection" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Variable Selection</h1>
+<pre class="r"><code>churn.null &lt;- glm(Churn~1,family=binomial(link=&quot;logit&quot;),data = churn)
+
+# Because there are so many variables, we can afford to be restrictive on variable selection
+k &lt;- qchisq(0.01, 1, lower.tail=F)
+
+churn.stepwise &lt;- step(churn.fit,
+                       scope=list(lower = churn.null,upper = churn.fit),
+                       direction=&quot;both&quot;,test=&quot;F&quot;,
+                       k = k)</code></pre>
+<pre><code>## Start:  AIC=5985.51
+## Churn ~ (customerID + gender + SeniorCitizen + Partner + Dependents + 
+##     tenure + PhoneService + MultipleLines + InternetService + 
+##     OnlineSecurity + OnlineBackup + DeviceProtection + TechSupport + 
+##     StreamingTV + StreamingMovies + Contract + PaperlessBilling + 
+##     PaymentMethod + MonthlyCharges + TotalCharges) - customerID
+## 
+## 
+## Step:  AIC=5985.51
+## Churn ~ gender + SeniorCitizen + Partner + Dependents + tenure + 
+##     MultipleLines + InternetService + OnlineSecurity + OnlineBackup + 
+##     DeviceProtection + TechSupport + StreamingTV + StreamingMovies + 
+##     Contract + PaperlessBilling + PaymentMethod + MonthlyCharges + 
+##     TotalCharges
+## 
+##                    Df Deviance    AIC  F value    Pr(&gt;F)    
+## - Partner           1   5826.3 5978.9   0.0000  0.995683    
+## - OnlineBackup      1   5826.3 5978.9   0.0265  0.870655    
+## - gender            1   5826.4 5979.0   0.1365  0.711779    
+## - DeviceProtection  1   5827.0 5979.6   0.8400  0.359434    
+## - TechSupport       1   5827.3 5979.9   1.2023  0.272899    
+## - OnlineSecurity    1   5827.6 5980.2   1.5908  0.207249    
+## - MonthlyCharges    1   5827.9 5980.5   1.9425  0.163445    
+## - Dependents        1   5829.0 5981.6   3.3074  0.069011 .  
+## - StreamingTV       1   5829.6 5982.2   3.9445  0.047063 *  
+## - StreamingMovies   1   5829.6 5982.2   4.0537  0.044114 *  
+## - InternetService   1   5831.1 5983.7   5.7775  0.016258 *  
+## - SeniorCitizen     1   5832.8 5985.4   7.8961  0.004968 ** 
+## &lt;none&gt;                  5826.3 5985.5                       
+## - PaymentMethod     3   5852.5 5991.8  10.4974 6.921e-07 ***
+## - MultipleLines     2   5846.8 5992.7  12.3269 4.528e-06 ***
+## - PaperlessBilling  1   5847.5 6000.1  25.5466 4.428e-07 ***
+## - TotalCharges      1   5849.1 6001.7  27.4197 1.685e-07 ***
+## - Contract          2   5908.5 6054.5  49.4708 &lt; 2.2e-16 ***
+## - tenure            1   5937.9 6090.5 134.2485 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Step:  AIC=5978.88
+## Churn ~ gender + SeniorCitizen + Dependents + tenure + MultipleLines + 
+##     InternetService + OnlineSecurity + OnlineBackup + DeviceProtection + 
+##     TechSupport + StreamingTV + StreamingMovies + Contract + 
+##     PaperlessBilling + PaymentMethod + MonthlyCharges + TotalCharges
+## 
+##                    Df Deviance    AIC  F value    Pr(&gt;F)    
+## - OnlineBackup      1   5826.3 5972.3   0.0265  0.870693    
+## - gender            1   5826.4 5972.4   0.1366  0.711670    
+## - DeviceProtection  1   5827.0 5972.9   0.8407  0.359238    
+## - TechSupport       1   5827.3 5973.2   1.2030  0.272762    
+## - OnlineSecurity    1   5827.6 5973.6   1.5924  0.207020    
+## - MonthlyCharges    1   5827.9 5973.9   1.9433  0.163357    
+## - StreamingTV       1   5829.6 5975.5   3.9468  0.046999 *  
+## - Dependents        1   5829.6 5975.6   4.0319  0.044685 *  
+## - StreamingMovies   1   5829.6 5975.6   4.0556  0.044062 *  
+## - InternetService   1   5831.1 5977.0   5.7810  0.016226 *  
+## &lt;none&gt;                  5826.3 5978.9                       
+## - SeniorCitizen     1   5832.9 5978.9   7.9914  0.004713 ** 
+## - PaymentMethod     3   5852.5 5985.2  10.5053 6.842e-07 ***
+## + Partner           1   5826.3 5985.5   0.0000  0.995683    
+## - MultipleLines     2   5846.8 5986.1  12.3318 4.506e-06 ***
+## - PaperlessBilling  1   5847.5 5993.5  25.5506 4.419e-07 ***
+## - TotalCharges      1   5849.1 5995.0  27.4238 1.682e-07 ***
+## - Contract          2   5908.5 6047.9  49.4783 &lt; 2.2e-16 ***
+## - tenure            1   5938.7 6084.7 135.2905 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Step:  AIC=5972.26
+## Churn ~ gender + SeniorCitizen + Dependents + tenure + MultipleLines + 
+##     InternetService + OnlineSecurity + DeviceProtection + TechSupport + 
+##     StreamingTV + StreamingMovies + Contract + PaperlessBilling + 
+##     PaymentMethod + MonthlyCharges + TotalCharges
+## 
+##                    Df Deviance    AIC  F value    Pr(&gt;F)    
+## - gender            1   5826.4 5965.7   0.1400 0.7082855    
+## - DeviceProtection  1   5827.7 5967.1   1.7283 0.1886711    
+## - TechSupport       1   5829.6 5968.9   3.9831 0.0459966 *  
+## - Dependents        1   5829.6 5969.0   4.0233 0.0449149 *  
+## - OnlineSecurity    1   5830.6 5969.9   5.1377 0.0234419 *  
+## - MonthlyCharges    1   5832.9 5972.2   7.9598 0.0047963 ** 
+## &lt;none&gt;                  5826.3 5972.3                       
+## - SeniorCitizen     1   5832.9 5972.3   7.9841 0.0047323 ** 
+## - StreamingTV       1   5838.0 5977.4  14.1423 0.0001709 ***
+## - StreamingMovies   1   5838.6 5977.9  14.7576 0.0001233 ***
+## - PaymentMethod     3   5852.5 5978.6  10.5053 6.842e-07 ***
+## + OnlineBackup      1   5826.3 5978.9   0.0265 0.8706934    
+## + Partner           1   5826.3 5978.9   0.0000 0.9975429    
+## - MultipleLines     2   5847.8 5980.5  12.9562 2.419e-06 ***
+## - InternetService   1   5847.3 5986.7  25.3094 5.005e-07 ***
+## - PaperlessBilling  1   5847.6 5986.9  25.6292 4.243e-07 ***
+## - TotalCharges      1   5849.2 5988.5  27.5011 1.616e-07 ***
+## - Contract          2   5908.6 6041.2  49.4844 &lt; 2.2e-16 ***
+## - tenure            1   5938.7 6078.1 135.2829 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Step:  AIC=5965.74
+## Churn ~ SeniorCitizen + Dependents + tenure + MultipleLines + 
+##     InternetService + OnlineSecurity + DeviceProtection + TechSupport + 
+##     StreamingTV + StreamingMovies + Contract + PaperlessBilling + 
+##     PaymentMethod + MonthlyCharges + TotalCharges
+## 
+##                    Df Deviance    AIC  F value    Pr(&gt;F)    
+## - DeviceProtection  1   5827.8 5960.5   1.7216 0.1895293    
+## - TechSupport       1   5829.7 5962.4   3.9890 0.0458366 *  
+## - Dependents        1   5829.8 5962.5   4.0325 0.0446692 *  
+## - OnlineSecurity    1   5830.7 5963.4   5.1167 0.0237271 *  
+## - MonthlyCharges    1   5833.0 5965.7   7.9394 0.0048506 ** 
+## &lt;none&gt;                  5826.4 5965.7                       
+## - SeniorCitizen     1   5833.0 5965.7   7.9875 0.0047234 ** 
+## - StreamingTV       1   5838.1 5970.8  14.1253 0.0001724 ***
+## - StreamingMovies   1   5838.7 5971.4  14.7487 0.0001239 ***
+## - PaymentMethod     3   5852.6 5972.0  10.5092 6.804e-07 ***
+## + gender            1   5826.3 5972.3   0.1400 0.7082855    
+## + OnlineBackup      1   5826.4 5972.4   0.0299 0.8628053    
+## + Partner           1   5826.4 5972.4   0.0001 0.9932433    
+## - MultipleLines     2   5847.9 5974.0  12.9550 2.422e-06 ***
+## - InternetService   1   5847.4 5980.1  25.2888 5.058e-07 ***
+## - PaperlessBilling  1   5847.7 5980.4  25.6681 4.158e-07 ***
+## - TotalCharges      1   5849.3 5982.0  27.4915 1.624e-07 ***
+## - Contract          2   5908.6 6034.7  49.4587 &lt; 2.2e-16 ***
+## - tenure            1   5938.9 6071.6 135.3674 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Step:  AIC=5960.54
+## Churn ~ SeniorCitizen + Dependents + tenure + MultipleLines + 
+##     InternetService + OnlineSecurity + TechSupport + StreamingTV + 
+##     StreamingMovies + Contract + PaperlessBilling + PaymentMethod + 
+##     MonthlyCharges + TotalCharges
+## 
+##                    Df Deviance    AIC  F value    Pr(&gt;F)    
+## - Dependents        1   5831.2 5957.3   4.0895 0.0431874 *  
+## - MonthlyCharges    1   5833.4 5959.5   6.7402 0.0094459 ** 
+## - TechSupport       1   5834.1 5960.1   7.4812 0.0062503 ** 
+## &lt;none&gt;                  5827.8 5960.5                       
+## - SeniorCitizen     1   5834.5 5960.6   7.9961 0.0047011 ** 
+## - OnlineSecurity    1   5836.0 5962.1   9.8742 0.0016831 ** 
+## - StreamingTV       1   5838.7 5964.8  13.1090 0.0002960 ***
+## - StreamingMovies   1   5839.3 5965.4  13.8304 0.0002016 ***
+## + DeviceProtection  1   5826.4 5965.7   1.7216 0.1895293    
+## + OnlineBackup      1   5827.1 5966.4   0.8985 0.3432191    
+## - PaymentMethod     3   5853.8 5966.6  10.4160 7.788e-07 ***
+## + gender            1   5827.7 5967.1   0.1331 0.7152622    
+## + Partner           1   5827.8 5967.2   0.0014 0.9697636    
+## - MultipleLines     2   5848.2 5967.6  12.2431 4.922e-06 ***
+## - PaperlessBilling  1   5848.9 5975.0  25.3844 4.815e-07 ***
+## - TotalCharges      1   5850.6 5976.6  27.3620 1.736e-07 ***
+## - InternetService   1   5852.5 5978.6  29.6994 5.217e-08 ***
+## - Contract          2   5909.0 6028.4  48.8299 &lt; 2.2e-16 ***
+## - tenure            1   5940.6 6066.6 135.6185 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Step:  AIC=5957.3
+## Churn ~ SeniorCitizen + tenure + MultipleLines + InternetService + 
+##     OnlineSecurity + TechSupport + StreamingTV + StreamingMovies + 
+##     Contract + PaperlessBilling + PaymentMethod + MonthlyCharges + 
+##     TotalCharges
+## 
+##                    Df Deviance    AIC  F value    Pr(&gt;F)    
+## - MonthlyCharges    1   5837.0 5956.4   6.9393 0.0084506 ** 
+## - TechSupport       1   5837.4 5956.9   7.4476 0.0063678 ** 
+## &lt;none&gt;                  5831.2 5957.3                       
+## - OnlineSecurity    1   5839.6 5959.1  10.0837 0.0015023 ** 
+## - SeniorCitizen     1   5839.7 5959.1  10.1914 0.0014172 ** 
+## + Dependents        1   5827.8 5960.5   4.0895 0.0431874 *  
+## - StreamingTV       1   5842.1 5961.6  13.1150 0.0002950 ***
+## - StreamingMovies   1   5843.0 5962.4  14.1473 0.0001704 ***
+## + DeviceProtection  1   5829.8 5962.5   1.7783 0.1824064    
+## + OnlineBackup      1   5830.4 5963.1   0.9683 0.3251377    
+## + Partner           1   5830.7 5963.4   0.6668 0.4141968    
+## - PaymentMethod     3   5857.6 5963.8  10.5743 6.191e-07 ***
+## + gender            1   5831.1 5963.8   0.1414 0.7069131    
+## - MultipleLines     2   5851.8 5964.6  12.3686 4.343e-06 ***
+## - PaperlessBilling  1   5852.8 5972.2  25.9393 3.615e-07 ***
+## - TotalCharges      1   5854.7 5974.2  28.2693 1.088e-07 ***
+## - InternetService   1   5856.5 5975.9  30.3326 3.769e-08 ***
+## - Contract          2   5915.3 6028.1  50.5738 &lt; 2.2e-16 ***
+## - tenure            1   5946.8 6066.2 138.9546 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Step:  AIC=5956.44
+## Churn ~ SeniorCitizen + tenure + MultipleLines + InternetService + 
+##     OnlineSecurity + TechSupport + StreamingTV + StreamingMovies + 
+##     Contract + PaperlessBilling + PaymentMethod + TotalCharges
+## 
+##                    Df Deviance    AIC  F value    Pr(&gt;F)    
+## - StreamingTV       1   5842.3 5955.1   6.3540  0.011734 *  
+## - StreamingMovies   1   5843.3 5956.1   7.5528  0.006007 ** 
+## &lt;none&gt;                  5837.0 5956.4                       
+## + MonthlyCharges    1   5831.2 5957.3   6.9393  0.008451 ** 
+## + OnlineBackup      1   5831.8 5957.9   6.2596  0.012375 *  
+## - SeniorCitizen     1   5845.4 5958.2  10.1244  0.001470 ** 
+## + Dependents        1   5833.4 5959.5   4.2882  0.038415 *  
+## + Partner           1   5836.4 5962.5   0.7297  0.393010    
+## + DeviceProtection  1   5836.6 5962.6   0.5364  0.463953    
+## + gender            1   5836.9 5963.0   0.1260  0.722642    
+## - PaymentMethod     3   5863.9 5963.4  10.7803 4.594e-07 ***
+## - TotalCharges      1   5856.5 5969.3  23.4663 1.298e-06 ***
+## - TechSupport       1   5857.6 5970.4  24.7227 6.777e-07 ***
+## - MultipleLines     2   5865.0 5971.2  16.8217 5.151e-08 ***
+## - PaperlessBilling  1   5858.6 5971.4  25.9429 3.608e-07 ***
+## - OnlineSecurity    1   5860.5 5973.3  28.2653 1.090e-07 ***
+## - InternetService   1   5898.6 6011.4  73.9815 &lt; 2.2e-16 ***
+## - Contract          2   5923.9 6030.0  52.1868 &lt; 2.2e-16 ***
+## - tenure            1   5948.3 6061.1 133.7254 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Step:  AIC=5955.09
+## Churn ~ SeniorCitizen + tenure + MultipleLines + InternetService + 
+##     OnlineSecurity + TechSupport + StreamingMovies + Contract + 
+##     PaperlessBilling + PaymentMethod + TotalCharges
+## 
+##                    Df Deviance    AIC  F value    Pr(&gt;F)    
+## &lt;none&gt;                  5842.3 5955.1                       
+## + OnlineBackup      1   5836.8 5956.2   6.6031 0.0102009 *  
+## + StreamingTV       1   5837.0 5956.4   6.3540 0.0117338 *  
+## - SeniorCitizen     1   5850.5 5956.7   9.9076 0.0016529 ** 
+## + Dependents        1   5838.9 5958.4   4.0383 0.0445164 *  
+## - StreamingMovies   1   5852.4 5958.5  12.0852 0.0005113 ***
+## + Partner           1   5841.8 5961.2   0.6241 0.4295579    
+## + DeviceProtection  1   5842.1 5961.5   0.2881 0.5914718    
+## + MonthlyCharges    1   5842.1 5961.6   0.1834 0.6685043    
+## + gender            1   5842.2 5961.6   0.1335 0.7148187    
+## - PaymentMethod     3   5871.2 5964.1  11.5578 1.487e-07 ***
+## - TechSupport       1   5862.1 5968.3  23.7728 1.108e-06 ***
+## - MultipleLines     2   5871.9 5971.4  17.7594 2.026e-08 ***
+## - PaperlessBilling  1   5865.3 5971.5  27.6200 1.520e-07 ***
+## - OnlineSecurity    1   5867.1 5973.2  29.7671 5.038e-08 ***
+## - TotalCharges      1   5867.8 5974.0  30.6369 3.224e-08 ***
+## - InternetService   1   5904.1 6010.3  74.2505 &lt; 2.2e-16 ***
+## - Contract          2   5927.4 6026.9  51.0799 &lt; 2.2e-16 ***
+## - tenure            1   5964.8 6071.0 147.1280 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>summary(churn.stepwise)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = Churn ~ SeniorCitizen + tenure + MultipleLines + 
+##     InternetService + OnlineSecurity + TechSupport + StreamingMovies + 
+##     Contract + PaperlessBilling + PaymentMethod + TotalCharges, 
+##     family = binomial(link = &quot;logit&quot;), data = churn)
+## 
+## Coefficients: (3 not defined because of singularities)
+##                                        Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)                          -5.483e-01  1.293e-01  -4.240 2.23e-05 ***
+## SeniorCitizen                         2.381e-01  8.279e-02   2.876 0.004025 ** 
+## tenure                               -6.192e-02  6.104e-03 -10.145  &lt; 2e-16 ***
+## MultipleLinesNo phone service         6.441e-01  1.322e-01   4.872 1.10e-06 ***
+## MultipleLinesYes                      2.515e-01  7.946e-02   3.165 0.001549 ** 
+## InternetServiceFiber optic            7.647e-01  9.796e-02   7.806 5.90e-15 ***
+## InternetServiceNo                    -7.530e-01  1.361e-01  -5.531 3.18e-08 ***
+## OnlineSecurityNo internet service            NA         NA      NA       NA    
+## OnlineSecurityYes                    -4.180e-01  8.449e-02  -4.947 7.53e-07 ***
+## TechSupportNo internet service               NA         NA      NA       NA    
+## TechSupportYes                       -3.789e-01  8.554e-02  -4.429 9.46e-06 ***
+## StreamingMoviesNo internet service           NA         NA      NA       NA    
+## StreamingMoviesYes                    2.490e-01  7.861e-02   3.168 0.001537 ** 
+## ContractOne year                     -6.650e-01  1.067e-01  -6.234 4.55e-10 ***
+## ContractTwo year                     -1.367e+00  1.757e-01  -7.781 7.20e-15 ***
+## PaperlessBillingYes                   3.546e-01  7.417e-02   4.781 1.74e-06 ***
+## PaymentMethodCredit card (automatic) -9.244e-02  1.139e-01  -0.812 0.416984    
+## PaymentMethodElectronic check         3.175e-01  9.423e-02   3.370 0.000752 ***
+## PaymentMethodMailed check            -6.107e-02  1.145e-01  -0.533 0.593821    
+## TotalCharges                          3.305e-04  6.723e-05   4.917 8.80e-07 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 8143.4  on 7031  degrees of freedom
+## Residual deviance: 5842.3  on 7015  degrees of freedom
+## AIC: 5876.3
+## 
+## Number of Fisher Scoring iterations: 6</code></pre>
+<p>Variables selected:</p>
+<pre class="r"><code>churn.stepwise$call</code></pre>
+<pre><code>## glm(formula = Churn ~ SeniorCitizen + tenure + MultipleLines + 
+##     InternetService + OnlineSecurity + TechSupport + StreamingMovies + 
+##     Contract + PaperlessBilling + PaymentMethod + TotalCharges, 
+##     family = binomial(link = &quot;logit&quot;), data = churn)</code></pre>
+<pre class="r"><code>churn.fit.reduced$call</code></pre>
+<pre><code>## glm(formula = Churn ~ SeniorCitizen + tenure + MultipleLines + 
+##     InternetService + Contract + PaperlessBilling + PaymentMethod + 
+##     TotalCharges, family = binomial(link = &quot;logit&quot;), data = churn)</code></pre>
+<pre class="r"><code># Remove streaming movies
+churn.stepwise.1 &lt;- glm(formula = Churn ~ SeniorCitizen + tenure + MultipleLines + 
+    InternetService + OnlineSecurity + TechSupport + 
+    Contract + PaperlessBilling + PaymentMethod + TotalCharges, 
+    family = binomial(link = &quot;logit&quot;), data = churn)
+
+# Remove streaming movies, TechSupport
+churn.stepwise.2 &lt;- glm(formula = Churn ~ SeniorCitizen + tenure + MultipleLines + 
+    InternetService + OnlineSecurity + 
+    Contract + PaperlessBilling + PaymentMethod + TotalCharges, 
+    family = binomial(link = &quot;logit&quot;), data = churn)
+
+anova(churn.fit.reduced,churn.stepwise.2,churn.stepwise.1,churn.stepwise)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Resid. Df"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Resid. Dev"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Df"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Deviance"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Pr(>Chi)"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"7018","2":"5899.828","3":"NA","4":"NA","5":"NA","_rn_":"1"},{"1":"7017","2":"5871.327","3":"1","4":"28.50110","5":"9.364527e-08","_rn_":"2"},{"1":"7016","2":"5852.363","3":"1","4":"18.96414","5":"1.331985e-05","_rn_":"3"},{"1":"7015","2":"5842.298","3":"1","4":"10.06490","5":"1.511205e-03","_rn_":"4"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Model 2 is significantly better at explaining Churn. This stepwise
+model adds back in three variables to to the reduced model:
+OnlineSecurity, TechSupport, StreamingMovies.</p>
+<div id="re-check-multicollinearity" class="section level2"
+number="3.1">
+<h2><span class="header-section-number">3.1</span> Re-check
+Multicollinearity</h2>
+<pre class="r"><code>cond.index(churn.stepwise, data=churn)</code></pre>
+<pre><code>##  [1] 1.000000e+00 1.372306e+00 2.238997e+00 2.566460e+00 2.837376e+00
+##  [6] 2.951097e+00 3.286880e+00 3.574375e+00 3.943486e+00 4.141395e+00
+## [11] 4.519665e+00 4.935432e+00 5.210376e+00 5.864349e+00 7.229496e+00
+## [16] 1.119355e+01 1.709818e+01 3.861473e+08 8.428337e+08 2.159073e+09</code></pre>
+<pre class="r"><code>cond.index(churn.stepwise.1, data=churn)</code></pre>
+<pre><code>##  [1] 1.000000e+00 1.482721e+00 2.141341e+00 2.450337e+00 2.707356e+00
+##  [6] 2.821385e+00 3.149718e+00 3.416094e+00 3.881858e+00 3.962582e+00
+## [11] 4.613957e+00 4.927430e+00 5.648598e+00 6.874077e+00 1.069470e+01
+## [16] 1.555776e+01 3.044554e+08 6.123331e+08</code></pre>
+<pre class="r"><code>cond.index(churn.stepwise.2, data=churn)</code></pre>
+<pre><code>##  [1] 1.000000e+00 1.647890e+00 2.157724e+00 2.369799e+00 2.598730e+00
+##  [6] 2.762392e+00 3.033465e+00 3.290736e+00 3.759132e+00 4.364566e+00
+## [11] 4.731612e+00 5.384280e+00 6.597211e+00 1.022308e+01 1.443900e+01
+## [16] 4.363788e+08</code></pre>
+<pre class="r"><code>cond.index(churn.fit.reduced, data=churn)</code></pre>
+<pre><code>##  [1]  1.000000  1.851448  2.188398  2.371296  2.496958  2.842187  3.032654
+##  [8]  3.195287  4.156824  4.535447  5.204044  6.324844  9.710559 13.676272</code></pre>
+</div>
+</div>
+<div id="model-selection" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Model Selection</h1>
+<div id="logistic-regression" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Logistic
+Regression</h2>
+<pre class="r"><code>churn.logreg &lt;- glm(Churn~SeniorCitizen+tenure+MultipleLines+InternetService+Contract+PaperlessBilling+PaymentMethod+TotalCharges,
+    family=binomial(link=&quot;logit&quot;),
+    data = churn)
+
+summary(churn.logreg)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = Churn ~ SeniorCitizen + tenure + MultipleLines + 
+##     InternetService + Contract + PaperlessBilling + PaymentMethod + 
+##     TotalCharges, family = binomial(link = &quot;logit&quot;), data = churn)
+## 
+## Coefficients:
+##                                        Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)                          -0.7524686  0.1216481  -6.186 6.19e-10 ***
+## SeniorCitizen                         0.2838042  0.0820511   3.459 0.000542 ***
+## tenure                               -0.0623101  0.0059172 -10.530  &lt; 2e-16 ***
+## MultipleLinesNo phone service         0.7163172  0.1296922   5.523 3.33e-08 ***
+## MultipleLinesYes                      0.2794728  0.0788261   3.545 0.000392 ***
+## InternetServiceFiber optic            0.9105034  0.0951849   9.566  &lt; 2e-16 ***
+## InternetServiceNo                    -0.5347664  0.1307872  -4.089 4.34e-05 ***
+## ContractOne year                     -0.7177526  0.1051426  -6.826 8.70e-12 ***
+## ContractTwo year                     -1.5309937  0.1736988  -8.814  &lt; 2e-16 ***
+## PaperlessBillingYes                   0.3843680  0.0734646   5.232 1.68e-07 ***
+## PaymentMethodCredit card (automatic) -0.0969663  0.1131124  -0.857 0.391303    
+## PaymentMethodElectronic check         0.3697148  0.0934143   3.958 7.56e-05 ***
+## PaymentMethodMailed check            -0.0803387  0.1135281  -0.708 0.479160    
+## TotalCharges                          0.0003168  0.0000630   5.029 4.94e-07 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 8143.4  on 7031  degrees of freedom
+## Residual deviance: 5899.8  on 7018  degrees of freedom
+## AIC: 5927.8
+## 
+## Number of Fisher Scoring iterations: 6</code></pre>
+<pre class="r"><code>broom::tidy(churn.logreg)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["term"],"name":[1],"type":["chr"],"align":["left"]},{"label":["estimate"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["std.error"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["statistic"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["p.value"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"(Intercept)","2":"-0.7524685955","3":"0.1216480966","4":"-6.1856175","5":"6.185984e-10"},{"1":"SeniorCitizen","2":"0.2838041796","3":"0.0820511035","4":"3.4588710","5":"5.424447e-04"},{"1":"tenure","2":"-0.0623100773","3":"0.0059172238","4":"-10.5302891","5":"6.264177e-26"},{"1":"MultipleLinesNo phone service","2":"0.7163171797","3":"0.1296921752","4":"5.5232105","5":"3.328606e-08"},{"1":"MultipleLinesYes","2":"0.2794728130","3":"0.0788260807","4":"3.5454359","5":"3.919644e-04"},{"1":"InternetServiceFiber optic","2":"0.9105034442","3":"0.0951849340","4":"9.5656256","5":"1.115249e-21"},{"1":"InternetServiceNo","2":"-0.5347664326","3":"0.1307872202","4":"-4.0888279","5":"4.335584e-05"},{"1":"ContractOne year","2":"-0.7177525891","3":"0.1051425571","4":"-6.8264707","5":"8.702904e-12"},{"1":"ContractTwo year","2":"-1.5309937176","3":"0.1736988134","4":"-8.8140713","5":"1.206813e-18"},{"1":"PaperlessBillingYes","2":"0.3843680352","3":"0.0734646201","4":"5.2320156","5":"1.676716e-07"},{"1":"PaymentMethodCredit card (automatic)","2":"-0.0969662899","3":"0.1131123715","4":"-0.8572563","5":"3.913033e-01"},{"1":"PaymentMethodElectronic check","2":"0.3697148405","3":"0.0934142508","4":"3.9577991","5":"7.564353e-05"},{"1":"PaymentMethodMailed check","2":"-0.0803387365","3":"0.1135281381","4":"-0.7076548","5":"4.791596e-01"},{"1":"TotalCharges","2":"0.0003168002","3":"0.0000629986","4":"5.0286868","5":"4.938503e-07"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>The polynomial model is significantly better.</p>
+<pre class="r"><code>log.odds &lt;- coef(churn.logreg)    
+odds &lt;- exp(coef(churn.logreg))
+prob &lt;- odds/(1+odds)
+cbind(log.odds, odds, prob)</code></pre>
+<pre><code>##                                           log.odds      odds      prob
+## (Intercept)                          -0.7524685955 0.4712019 0.3202836
+## SeniorCitizen                         0.2838041796 1.3281728 0.5704786
+## tenure                               -0.0623100773 0.9395915 0.4844275
+## MultipleLinesNo phone service         0.7163171797 2.0468810 0.6717955
+## MultipleLinesYes                      0.2794728130 1.3224325 0.5694170
+## InternetServiceFiber optic            0.9105034442 2.4855736 0.7131032
+## InternetServiceNo                    -0.5347664326 0.5858061 0.3694059
+## ContractOne year                     -0.7177525891 0.4878474 0.3278881
+## ContractTwo year                     -1.5309937176 0.2163206 0.1778483
+## PaperlessBillingYes                   0.3843680352 1.4686859 0.5949262
+## PaymentMethodCredit card (automatic) -0.0969662899 0.9075866 0.4757774
+## PaymentMethodElectronic check         0.3697148405 1.4473218 0.5913901
+## PaymentMethodMailed check            -0.0803387365 0.9228037 0.4799261
+## TotalCharges                          0.0003168002 1.0003169 0.5000792</code></pre>
+<div id="testtrain-split" class="section level3" number="4.1.1">
+<h3><span class="header-section-number">4.1.1</span> Test/Train
+Split</h3>
+<pre class="r"><code>set.seed(1)
+n &lt;- nrow(churn)
+train &lt;- sample(n,n*0.60)</code></pre>
+</div>
+<div id="linear-variables" class="section level3" number="4.1.2">
+<h3><span class="header-section-number">4.1.2</span> Linear
+Variables</h3>
+<pre class="r"><code>churn.logreg.linear.train &lt;- glm(Churn ~ SeniorCitizen + tenure + MultipleLines + InternetService + Contract + PaperlessBilling + PaymentMethod + TotalCharges,
+    family=binomial(link=&quot;logit&quot;),
+    data = churn[train,])
+
+probs &lt;- predict(churn.logreg.linear.train, churn[-train,], type = &quot;response&quot;)
+# Lowered the threshold manually to 0.35 just by trial and error
+preds &lt;- ifelse(probs&gt;0.35, 1, 0)
+conf.mat &lt;- table(preds, churn$Churn[-train])
+
+TruN=conf.mat[1,1] # True negatives, row 1 col 1
+TruP=conf.mat[2,2] # True positives, row 2 col 2
+FalP=conf.mat[2,1] # False positives, etc.
+FalN=conf.mat[1,2] # False negatives
+TotN=conf.mat[1,1] + conf.mat[2,1] # Total negatives
+TotP=conf.mat[1,2] + conf.mat[2,2] # Total positives
+Tot=TotN+TotP # Matrix total
+
+Accuracy=(TruN+TruP)/Tot
+Error=(FalN+FalP)/Tot
+Sensitivity=TruP/TotP # Proportion of correct positives
+Specificity=TruN/TotN # Proportion of correct negatives
+FalPos = 1 - Specificity
+
+print(c(&quot;Accuracy&quot;=Accuracy,
+        &quot;Error&quot;=Error,
+        &quot;Sensitivity&quot;=Sensitivity,
+        &quot;Specificity&quot;=Specificity,
+        &quot;False Positives&quot;=FalPos), digits=2) # Prints fewer digits</code></pre>
+<pre><code>##        Accuracy           Error     Sensitivity     Specificity False Positives 
+##            0.77            0.23            0.70            0.80            0.20</code></pre>
+<pre class="r"><code>logreg.linear.rates &lt;- c(&quot;Accuracy&quot;=Accuracy,
+        &quot;Error&quot;=Error,
+        &quot;Sensitivity&quot;=Sensitivity,
+        &quot;Specificity&quot;=Specificity,
+        &quot;False Positives&quot;=FalPos)
+
+pred &lt;- prediction(preds,churn$Churn[-train])
+perf &lt;- performance(pred,&quot;tpr&quot;,&quot;fpr&quot;)
+plot(perf,colorize=T)</code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/churn.logreg.linear.train-1.png" width="672" /></p>
+<pre class="r"><code>auc &lt;- performance(pred,&quot;auc&quot;)
+c(auc@y.name[[1]], auc@y.values[[1]])</code></pre>
+<pre><code>## [1] &quot;Area under the ROC curve&quot; &quot;0.752133952220864&quot;</code></pre>
+</div>
+</div>
+<div id="linear-discriminant-analysis" class="section level2"
+number="4.2">
+<h2><span class="header-section-number">4.2</span> Linear Discriminant
+Analysis</h2>
+<pre class="r"><code>churn.lda &lt;- lda(Churn ~ SeniorCitizen + tenure + MultipleLines + InternetService + Contract + PaperlessBilling + PaymentMethod + TotalCharges,
+    data = churn[train,])
+
+
+preds &lt;- predict(churn.lda,churn[-train,])$posterior[,2]
+preds &lt;- ifelse(preds &gt; 0.35, 1, 0)
+
+conf.mat &lt;- table(preds, churn$Churn[-train])
+
+TruN=conf.mat[1,1] # True negatives, row 1 col 1
+TruP=conf.mat[2,2] # True positives, row 2 col 2
+FalP=conf.mat[2,1] # False positives, etc.
+FalN=conf.mat[1,2] # False negatives
+TotN=conf.mat[1,1] + conf.mat[2,1] # Total negatives
+TotP=conf.mat[1,2] + conf.mat[2,2] # Total positives
+Tot=TotN+TotP # Matrix total
+
+Accuracy=(TruN+TruP)/Tot
+Error=(FalN+FalP)/Tot
+Sensitivity=TruP/TotP # Proportion of correct positives
+Specificity=TruN/TotN # Proportion of correct negatives
+FalPos = 1 - Specificity
+
+print(c(&quot;Accuracy&quot;=Accuracy,
+        &quot;Error&quot;=Error,
+        &quot;Sensitivity&quot;=Sensitivity,
+        &quot;Specificity&quot;=Specificity,
+        &quot;False Positives&quot;=FalPos), digits=2) # Prints fewer digits</code></pre>
+<pre><code>##        Accuracy           Error     Sensitivity     Specificity False Positives 
+##            0.78            0.22            0.67            0.82            0.18</code></pre>
+<pre class="r"><code>lda.rates &lt;- c(&quot;Accuracy&quot;=Accuracy,
+        &quot;Error&quot;=Error,
+        &quot;Sensitivity&quot;=Sensitivity,
+        &quot;Specificity&quot;=Specificity,
+        &quot;False Positives&quot;=FalPos)
+
+
+pred &lt;- prediction(preds,churn$Churn[-train])
+perf &lt;- performance(pred,&quot;tpr&quot;,&quot;fpr&quot;)
+plot(perf,colorize=T)</code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>auc &lt;- performance(pred,&quot;auc&quot;)
+c(auc@y.name[[1]], auc@y.values[[1]])</code></pre>
+<pre><code>## [1] &quot;Area under the ROC curve&quot; &quot;0.745390497656887&quot;</code></pre>
+</div>
+<div id="random-forest" class="section level2" number="4.3">
+<h2><span class="header-section-number">4.3</span> Random Forest</h2>
+<pre class="r"><code>set.seed(123)
+churn.rf &lt;- randomForest(as.factor(Churn) ~ SeniorCitizen + tenure + MultipleLines + InternetService + Contract + PaperlessBilling + PaymentMethod + TotalCharges,
+    data = churn[train,],
+    importance=T,
+    mtry=8)
+
+plot(churn.rf)</code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>varImpPlot(churn.rf) </code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/unnamed-chunk-8-2.png" width="672" /></p>
+<pre class="r"><code>importance(churn.rf)</code></pre>
+<pre><code>##                            0          1 MeanDecreaseAccuracy MeanDecreaseGini
+## SeniorCitizen     23.5077591  0.7560151            19.563656         47.31397
+## tenure            32.9029022 23.3693999            58.278776        277.99436
+## MultipleLines      0.9373841 10.7603795             8.315747         48.39879
+## InternetService   13.7052240 52.6497915            51.015557        108.51806
+## Contract         -22.9653530 78.9509570            39.353273        276.79717
+## PaperlessBilling   0.8453461 16.2492299            11.320629         53.43850
+## PaymentMethod     -0.4391000 15.8995179            10.606852        105.40043
+## TotalCharges      20.2527629  5.7149302            30.235313        699.33935</code></pre>
+<pre class="r"><code># Learned how to produce probabilites from trees here: https://stackoverflow.com/questions/64651101/is-there-a-way-to-change-threshold-of-a-classification-within-a-model-in-caret-r
+preds &lt;- predict(churn.rf,churn[-train,], type = &quot;prob&quot;)[,2]
+preds &lt;- ifelse(probs&gt;0.35, 1, 0)
+conf.mat &lt;- table(preds, churn$Churn[-train])
+
+TruN=conf.mat[1,1] # True negatives, row 1 col 1
+TruP=conf.mat[2,2] # True positives, row 2 col 2
+FalP=conf.mat[2,1] # False positives, etc.
+FalN=conf.mat[1,2] # False negatives
+TotN=conf.mat[1,1] + conf.mat[2,1] # Total negatives
+TotP=conf.mat[1,2] + conf.mat[2,2] # Total positives
+Tot=TotN+TotP # Matrix total
+
+Accuracy=(TruN+TruP)/Tot
+Error=(FalN+FalP)/Tot
+Sensitivity=TruP/TotP # Proportion of correct positives
+Specificity=TruN/TotN # Proportion of correct negatives
+FalPos = 1 - Specificity
+
+print(c(&quot;Accuracy&quot;=Accuracy,
+        &quot;Error&quot;=Error,
+        &quot;Sensitivity&quot;=Sensitivity,
+        &quot;Specificity&quot;=Specificity,
+        &quot;False Positives&quot;=FalPos), digits=2) # Prints fewer digits</code></pre>
+<pre><code>##        Accuracy           Error     Sensitivity     Specificity False Positives 
+##            0.77            0.23            0.70            0.80            0.20</code></pre>
+<pre class="r"><code>rf.rates &lt;- c(&quot;Accuracy&quot;=Accuracy,
+        &quot;Error&quot;=Error,
+        &quot;Sensitivity&quot;=Sensitivity,
+        &quot;Specificity&quot;=Specificity,
+        &quot;False Positives&quot;=FalPos)
+
+
+# convert preds to numeric
+preds &lt;- ifelse(as.character(preds) == &#39;0&#39;,0,1)
+
+pred &lt;- prediction(preds,churn$Churn[-train])
+perf &lt;- performance(pred,&quot;tpr&quot;,&quot;fpr&quot;)
+plot(perf,colorize=T)</code></pre>
+<p><img src="customerchurn_prelim_da_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<pre class="r"><code>auc &lt;- performance(pred,&quot;auc&quot;)
+c(auc@y.name[[1]], auc@y.values[[1]])</code></pre>
+<pre><code>## [1] &quot;Area under the ROC curve&quot; &quot;0.752133952220864&quot;</code></pre>
+</div>
+</div>
+<div id="models-performance-summary" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Models Performance
+Summary</h1>
+<pre class="r"><code>round(rbind(logreg.linear.rates,lda.rates,rf.rates),5)</code></pre>
+<pre><code>##                     Accuracy   Error Sensitivity Specificity False Positives
+## logreg.linear.rates  0.77497 0.22503     0.70182     0.80244         0.19756
+## lda.rates            0.77817 0.22183     0.67318     0.81760         0.18240
+## rf.rates             0.77497 0.22503     0.70182     0.80244         0.19756</code></pre>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

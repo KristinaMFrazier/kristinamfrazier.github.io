@@ -19,5 +19,14 @@
   },
   "cv.qmd": {
     "cv.html": "0389ae69"
+  },
+  "posts/reseller/index.qmd": {
+    "index.html": "850af0ed"
+  },
+  "posts/telco/index.qmd": {
+    "index.html": "c3953370"
+  },
+  "posts/telco/customerchurn_prelim_da.Rmd": {
+    "customerchurn_prelim_da.html": "721f9828"
   }
 }
